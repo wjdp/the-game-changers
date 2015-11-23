@@ -41,8 +41,9 @@ The final mark will be based on the group marked and a moderated peer assessment
 
 - **game.GameEngine** - Generic game engine, deals with game state
   - Subclassed to **game.FroggerGameEngine**
-- **controllers.Controller** - Generic systems controller
-  - **controllers.PlayerController** - Deals with user interaction
+- **controllers.Controller** - Generic systems controller, created by GameEngine, creates and manages Objects
+  - **controllers.MenuController** - Deals with menu
+  - **controllers.PlayerController** - Deals with user interaction while playing
   - **controllers.LevelController** - Deals with level generation and level runtime
 - **objects.Object** - Generic 2D object
   - **objects.MovableObject** - 2D object that moves
