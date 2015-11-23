@@ -54,10 +54,14 @@ class GameEngine(object):
   def event_handle(self, event):
     """Handle a single event"""
     if hasattr(event, 'key'):
+      # Global key binding to quit things, set keep_alive to false to trigger
+      #  quitting at the end of the current tick
       if event.key == K_ESCAPE: self.keep_alive = False
 
+      # Run event bindings in all the active controllers
       for controller in self.active_controllers:
         if event.key in controller.EVENT_BINDINGS:
+          # Argument needed here to satisfy the need for self within method
           controller.EVENT_BINDINGS[event.key](controller)
 
   def tick(self):

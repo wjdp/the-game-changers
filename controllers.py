@@ -2,11 +2,11 @@ import pygame
 from pygame.locals import *
 
 class Controller(object):
-  EVENT_BINDINGS = []
+  EVENT_BINDINGS = [] # Empty bindings
 
   def __init__(self, engine):
     self.engine = engine
-    self.create()
+    self.create() # Use create in sub-classes for any init stuff
 
   # Method stubs
 
