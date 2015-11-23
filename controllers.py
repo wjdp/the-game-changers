@@ -1,6 +1,8 @@
 import pygame
 from pygame.locals import *
 
+from consts import *
+
 class Controller(object):
   EVENT_BINDINGS = [] # Empty bindings
 
@@ -23,7 +25,8 @@ class MenuController(Controller):
   def create(self):
     print "Create menu controller"
     bg = pygame.image.load('images/menu.png')
-    self.engine.screen.blit(bg, (0,0))
+    self.engine.clear_background()
+    self.engine.background_blit(bg, ORIGIN)
 
   def close(self):
     print "Closing menu controller"
@@ -47,3 +50,12 @@ class LevelController(Controller):
 class GameOverController(Controller):
   def create(self):
     print "Create GO controller"
+
+class FPSCounterController(Controller):
+  def create(self):
+    self.font = pygame.font.SysFont("Arial", 16)
+
+  def tick(self):
+    text = self.font.render(str(self.engine.get_fps()), True, YELLOW)
+    self.engine.foreground_blit(text, (0, 0))
+

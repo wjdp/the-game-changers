@@ -1,7 +1,7 @@
 import sys, pygame
 from pygame.locals import *
 
-from colours import *
+from consts import *
 
 import controllers
 
@@ -38,6 +38,9 @@ class GameEngine(object):
     """Return the framerate, computed from last 10 clocks"""
     return int(self.clock.get_fps())
 
+  def get_screen_sized_surface(self):
+    return pygame.Surface((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+
   def setup_state(self, state):
     """Remove old controllers, start a new state's controllers"""
     new_controllers = self.STATES[state]
@@ -64,6 +67,22 @@ class GameEngine(object):
           # Argument needed here to satisfy the need for self within method
           controller.EVENT_BINDINGS[event.key](controller)
 
+  def clear_foreground(self):
+    self.foreground_surface = self.get_screen_sized_surface()
+
+    # Set and fill with the colorkey (the colour that means transparent)
+    self.foreground_surface.set_colorkey(COLORKEY)
+    self.foreground_surface.fill(COLORKEY)
+
+  def clear_background(self):
+    self.background_surface = self.get_screen_sized_surface()
+
+  def foreground_blit(self, surface, coord):
+    self.foreground_surface.blit(surface, coord)
+
+  def background_blit(self, surface, coord):
+    self.background_surface.blit(surface, coord)
+
   def tick(self):
     """Main game loop"""
     # Tick the clock
@@ -72,8 +91,14 @@ class GameEngine(object):
     # Events
     for event in pygame.event.get(): self.event_handle(event)
 
+    # Clear the foreground
+    self.clear_foreground()
+
     # Controller actions
     for controller in self.active_controllers: controller.tick()
+
+    self.screen.blit(self.background_surface, ORIGIN)
+    self.screen.blit(self.foreground_surface, ORIGIN)
 
     # Flip the screen
     pygame.display.flip()
@@ -92,12 +117,17 @@ class FroggerGameEngine(GameEngine):
   SCREEN_HEIGHT = 500
 
   STATES = {
-    'menu': [controllers.MenuController],
+    'menu': [
+      controllers.MenuController,
+      controllers.FPSCounterController,
+    ],
     'game': [
       controllers.PlayerController,
       controllers.LevelController,
     ],
-    'gameover': [controllers.GameOverController]
+    'gameover': [
+      controllers.GameOverController,
+    ]
   }
 
   STARTING_STATE = 'menu'
