@@ -3,5 +3,10 @@
 from game import FroggerGameEngine
 
 if __name__ == "__main__":
+  print "Starting game..."
   engine = FroggerGameEngine()
-  print "Run game here"
+
+  while engine.keep_alive:
+    engine.loop()
+
+  print "Game ended gracefully"
