@@ -43,7 +43,6 @@ class MenuController(Controller):
     K_RETURN: start_game
   }
 
-
 class PlayerController(Controller):
   def create(self):
     print "Create player controller"
@@ -51,6 +50,29 @@ class PlayerController(Controller):
 
   def tick(self):
     print self.player_object.pos
+
+  def move(self, rel_pos):
+    cp = self.player_object.pos
+    self.player_object.pos = (cp[0] + rel_pos[0], cp[1] + rel_pos[1])
+
+  def move_left(self):
+    self.move((-6, 0))
+
+  def move_right(self):
+    self.move((6, 0))
+
+  def move_up(self):
+    self.move((0, -6))
+
+  def move_down(self):
+    self.move((0, 6))
+
+  EVENT_BINDINGS = {
+    KM_LFET: move_left,
+    KM_RIGHT:  move_right,
+    KM_UP: move_up,
+    KM_DOWN: move_down,
+  }
 
 
 class LevelController(Controller):

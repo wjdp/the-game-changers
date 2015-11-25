@@ -74,9 +74,10 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
 
   def event_handle(self, event):
     """Handle a single event"""
-    if hasattr(event, 'key'):
+    if hasattr(event, 'key') and event.type == KEYDOWN:
       # Global key binding to quit things, set keep_alive to false to trigger
       #  quitting at the end of the current tick
+
       if event.key == K_ESCAPE: self.keep_alive = False
 
       # Run event bindings in all the active controllers
@@ -118,9 +119,7 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
     # Draw active objects to the foreground
     for obj in self.objects:
       obj_surface = obj.draw()
-      print obj_surface
       if obj_surface:
-        print obj_surface, obj.pos
         self.foreground_blit(obj_surface, obj.pos)
 
     self.screen.blit(self.background_surface, ORIGIN)

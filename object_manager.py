@@ -3,7 +3,7 @@ class ObjectManagerMixin(object):
 
   def create_object(self, obj, *args):
     """Add an object to current state and returns the instance"""
-    new_obj_instance = obj(args)
+    new_obj_instance = obj(*args)
     self.objects.append(new_obj_instance)
 
     if hasattr(self, 'object_super'):
