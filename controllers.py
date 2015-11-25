@@ -2,8 +2,13 @@ import pygame
 from pygame.locals import *
 
 from consts import *
+from object_manager import ObjectManagerMixin
+from characters import *
 
-class Controller(object):
+class BaseController(object):
+  pass
+
+class Controller(BaseController, ObjectManagerMixin):
   EVENT_BINDINGS = [] # Empty bindings
 
   def __init__(self, engine):
@@ -18,8 +23,8 @@ class Controller(object):
   def tick(self):
     pass
 
-  def close(self):
-    pass
+  def destroy(self):
+    self.purge_objects()
 
 class MenuController(Controller):
   def create(self):
@@ -42,14 +47,21 @@ class MenuController(Controller):
 class PlayerController(Controller):
   def create(self):
     print "Create player controller"
+    self.player_object = self.create_object(Frog, (150, 400))
+
+  def tick(self):
+    print self.player_object.pos
+
 
 class LevelController(Controller):
   def create(self):
     print "Create level controller"
 
+
 class GameOverController(Controller):
   def create(self):
-    print "Create GO controller"
+    print "Create game over controller"
+
 
 class FPSCounterController(Controller):
   def create(self):

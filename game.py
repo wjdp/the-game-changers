@@ -2,10 +2,14 @@ import sys, pygame
 from pygame.locals import *
 
 from consts import *
+from object_manager import ObjectManagerMixin
 
 import controllers
 
-class GameEngine(object):
+class BaseGameEngine(object):
+  pass
+
+class GameEngine(BaseGameEngine, ObjectManagerMixin):
   """Generic 2D game engine"""
   FRAMES_PER_SECOND = 30
 
@@ -41,18 +45,32 @@ class GameEngine(object):
   def get_screen_sized_surface(self):
     return pygame.Surface((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
 
+  def create_controller(self, controller):
+    new_controller = controller(self)
+    # Set the game engine as the ObjectManager parent
+    new_controller.object_super = self
+    self.active_controllers.append(new_controller)
+
+  def destroy_controller(self, controller):
+    controller.destroy()
+    self.active_controllers.remove(controller)
+
   def setup_state(self, state):
     """Remove old controllers, start a new state's controllers"""
     new_controllers = self.STATES[state]
 
-    # Close controllers not in new state
+    # Destroy controllers not in new state
     for controller in set(self.active_controllers) - set(new_controllers):
-      controller.close()
-      self.active_controllers.remove(controller)
+      self.destroy_controller(controller)
 
     # Add controllers not already running
     for controller in set(new_controllers) - set(self.active_controllers):
-      self.active_controllers.append(controller(self))
+      self.create_controller(controller)
+
+  def purge_controllers(self):
+    """Destroy all controllers"""
+    for controller in self.active_controllers:
+      self.destroy_controller(controller)
 
   def event_handle(self, event):
     """Handle a single event"""
@@ -108,6 +126,8 @@ class GameEngine(object):
 
   def quit(self):
     """Quit the game"""
+    print "Game engine quitting"
+    self.purge_controllers()
     pygame.quit()
 
 
