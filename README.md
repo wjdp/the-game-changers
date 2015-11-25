@@ -1,6 +1,7 @@
 # G54PRG, The Game Changers
 
 - Will Pimblett
+- Anna Dodson
 
 ## Project Spec
 
