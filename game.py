@@ -115,6 +115,14 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
     # Controller actions
     for controller in self.active_controllers: controller.tick()
 
+    # Draw active objects to the foreground
+    for obj in self.objects:
+      obj_surface = obj.draw()
+      print obj_surface
+      if obj_surface:
+        print obj_surface, obj.pos
+        self.foreground_blit(obj_surface, obj.pos)
+
     self.screen.blit(self.background_surface, ORIGIN)
     self.screen.blit(self.foreground_surface, ORIGIN)
 
