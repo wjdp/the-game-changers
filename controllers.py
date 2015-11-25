@@ -43,6 +43,10 @@ class MenuController(Controller):
     K_RETURN: start_game
   }
 
+class GameController(Controller):
+  def create(self):
+    self.engine.clear_background()
+
 class PlayerController(Controller):
   def create(self):
     print "Create player controller"

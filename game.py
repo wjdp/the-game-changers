@@ -149,8 +149,10 @@ class FroggerGameEngine(GameEngine):
       controllers.FPSCounterController,
     ],
     'game': [
+      controllers.GameController,
       controllers.PlayerController,
       controllers.LevelController,
+      controllers.FPSCounterController,
     ],
     'gameover': [
       controllers.GameOverController,
