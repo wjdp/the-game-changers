@@ -2,6 +2,7 @@
 
 - Will Pimblett
 - Anna Dodson
+- Janice Atuahene
 
 ## Project Spec
 
