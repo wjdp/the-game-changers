@@ -3,7 +3,8 @@ import pygame
 from consts import *
 
 class Object(object):
-  def __init__(self, pos=(0,0)):
+  def __init__(self, controller, pos=(0,0)):
+    self.controller = controller
     self.pos = pos
 
   def get_image(self):
@@ -26,9 +27,23 @@ class Object(object):
     else:
       return self.get_placeholder()
 
+  def tick(self):
+    pass
+
   def destroy(self):
     pass
 
 class MovableObject(Object):
-  pass
+  velocity = (0, 0)
 
+  def tick(self):
+    super(MovableObject, self).tick()
+    self.tick_move()
+
+  def tick_move(self):
+    """Move the object based on velocity"""
+    new_pos = (
+      self.pos[0] + (self.velocity[0] * self.controller.engine.last_tick),
+        self.pos[1] + (self.velocity[1] * self.controller.engine.last_tick)
+    )
+    self.pos = new_pos

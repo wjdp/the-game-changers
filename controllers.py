@@ -21,7 +21,7 @@ class Controller(BaseController, ObjectManagerMixin):
     pass
 
   def tick(self):
-    pass
+    self.tick_objects()
 
   def destroy(self):
     self.purge_objects()
@@ -50,26 +50,23 @@ class GameController(Controller):
 class PlayerController(Controller):
   def create(self):
     print "Create player controller"
-    self.player_object = self.create_object(Frog, (150, 400))
-
-  def tick(self):
-    print self.player_object.pos
+    self.player_object = self.create_object(Frog, self)
 
   def move(self, rel_pos):
     cp = self.player_object.pos
     self.player_object.pos = (cp[0] + rel_pos[0], cp[1] + rel_pos[1])
 
   def move_left(self):
-    self.move((-6, 0))
+    self.move((-32, 0))
 
   def move_right(self):
-    self.move((6, 0))
+    self.move((32, 0))
 
   def move_up(self):
-    self.move((0, -6))
+    self.move((0, -32))
 
   def move_down(self):
-    self.move((0, 6))
+    self.move((0, 32))
 
   EVENT_BINDINGS = {
     KM_LFET: move_left,
@@ -82,6 +79,18 @@ class PlayerController(Controller):
 class LevelController(Controller):
   def create(self):
     print "Create level controller"
+    self.cars = [
+      self.create_object(Car, self, lane=0, delay=0),
+      self.create_object(Car, self, lane=0, delay=2),
+      self.create_object(Car, self, lane=0, delay=4),
+      self.create_object(Car, self, lane=0, delay=6),
+      self.create_object(Car, self, lane=1, delay=2),
+      self.create_object(Car, self, lane=1, delay=6),
+      self.create_object(Car, self, lane=2, delay=0),
+      self.create_object(Car, self, lane=2, delay=2),
+      self.create_object(Car, self, lane=2, delay=3),
+      self.create_object(Car, self, lane=2, delay=6),
+    ]
 
 
 class GameOverController(Controller):

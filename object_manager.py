@@ -1,9 +1,9 @@
 class ObjectManagerMixin(object):
   objects = []
 
-  def create_object(self, obj, *args):
+  def create_object(self, obj, *args, **kwargs):
     """Add an object to current state and returns the instance"""
-    new_obj_instance = obj(*args)
+    new_obj_instance = obj(*args, **kwargs)
     self.objects.append(new_obj_instance)
 
     if hasattr(self, 'object_super'):
@@ -24,3 +24,8 @@ class ObjectManagerMixin(object):
     """Deletes all objects"""
     for obj in self.objects:
       self.delete_object(obj)
+
+  def tick_objects(self):
+    """Run tick function on all objects"""
+    for obj in self.objects:
+      obj.tick()
