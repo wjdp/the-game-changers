@@ -3,6 +3,7 @@
 - Will Pimblett
 - Anna Dodson
 - Janice Atuahene
+- Danielle Styles
 
 ## Project Spec
 
