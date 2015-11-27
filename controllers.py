@@ -73,6 +73,10 @@ class PlayerController(Controller):
     KM_RIGHT:  move_right,
     KM_UP: move_up,
     KM_DOWN: move_down,
+	KM_LFET1: move_left,
+    KM_RIGHT1:  move_right,
+    KM_UP1: move_up,
+    KM_DOWN1: move_down,
   }
 
 
@@ -106,3 +110,6 @@ class FPSCounterController(Controller):
     text = self.font.render(str(self.engine.get_fps()), True, YELLOW)
     self.engine.foreground_blit(text, (0, 0))
 
+class GameScore(Controller):
+  def create(self):
+    self.font = pygame.font.SysFont()
