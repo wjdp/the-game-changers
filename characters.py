@@ -18,12 +18,12 @@ class Character(MovableObject):
 
 class Frog(Character):
   def create(self):
-    self.pos = (SCREEN_WIDTH/2, SCREEN_HEIGHT-50)
+    self.pos = (SCREEN_WIDTH / 2, SCREEN_HEIGHT - 64)
 
 
 class Car(Character):
   SPEED = 0.06
-  LANE_HEIGHT = 40
+  LANE_HEIGHT = 32
   LANE_ORIGIN = SCREEN_WIDTH / 2
   CAR_WIDTH = 32
   CAR_SPACING = 64

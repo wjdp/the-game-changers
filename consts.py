@@ -28,8 +28,8 @@ KM_DOWN1 = K_s
 E_WIN = 5001
 E_DIE = 5002
 
-# Screen dimensions
+# Screen dimensions, we're using a 32x32 grid
 
-SCREEN_WIDTH = 785
-SCREEN_HEIGHT = 560
+SCREEN_WIDTH = 26 * 32
+SCREEN_HEIGHT = 18 * 32
 
