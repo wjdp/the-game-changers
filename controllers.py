@@ -47,6 +47,19 @@ class GameController(Controller):
   def create(self):
     self.engine.clear_background()
 
+  def win(self):
+    """Handle game state changes for win"""
+    print "WIN"
+
+  def die(self):
+    """Handle game state changes for die"""
+    print "DIE"
+
+  EVENT_BINDINGS = {
+    E_WIN: win,
+    E_DIE: die,
+  }
+
 class PlayerController(Controller):
   def create(self):
     print "Create player controller"

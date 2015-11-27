@@ -19,3 +19,8 @@ KM_LFET = K_a
 KM_RIGHT = K_d
 KM_UP = K_w
 KM_DOWN = K_s
+
+# Controller events
+
+E_WIN = 5001
+E_DIE = 5002
