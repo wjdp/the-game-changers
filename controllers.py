@@ -98,15 +98,22 @@ class LevelController(Controller):
     print "Create level controller"
     self.cars = [
       self.create_object(Car, self, lane=0, delay=0),
-      self.create_object(Car, self, lane=0, delay=2),
-      self.create_object(Car, self, lane=0, delay=4),
+      self.create_object(Car, self, lane=0, delay=3),
       self.create_object(Car, self, lane=0, delay=6),
+      self.create_object(Car, self, lane=0, delay=8),
       self.create_object(Car, self, lane=1, delay=2),
-      self.create_object(Car, self, lane=1, delay=6),
+      self.create_object(Car, self, lane=1, delay=4),
+      self.create_object(Car, self, lane=1, delay=7),
+      self.create_object(Car, self, lane=1, delay=9),
       self.create_object(Car, self, lane=2, delay=0),
-      self.create_object(Car, self, lane=2, delay=2),
-      self.create_object(Car, self, lane=2, delay=3),
-      self.create_object(Car, self, lane=2, delay=6),
+      self.create_object(Car, self, lane=2, delay=4),
+      self.create_object(Car, self, lane=3, delay=6),
+      self.create_object(Car, self, lane=3, delay=2),
+      self.create_object(Car, self, lane=3, delay=6),
+      self.create_object(Car, self, lane=4, delay=0),
+      self.create_object(Car, self, lane=4, delay=3),
+      self.create_object(Car, self, lane=4, delay=6),
+      self.create_object(Car, self, lane=4, delay=8),
     ]
 
 
