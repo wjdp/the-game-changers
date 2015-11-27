@@ -94,7 +94,12 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
       # Controller events
       for controller in self.active_controllers:
         if event.game_event in controller.EVENT_BINDINGS:
-          controller.EVENT_BINDINGS[event.game_event](controller)
+          controller.EVENT_BINDINGS[event.game_event](controller, event)
+
+  def post_event(self, event, **kwargs):
+    """Post a controller event"""
+    ev = pygame.event.Event(pygame.USEREVENT, game_event = event, **kwargs)
+    pygame.event.post(ev)
 
   def clear_foreground(self):
     self.foreground_surface = self.get_screen_sized_surface()

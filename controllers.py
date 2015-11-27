@@ -47,11 +47,11 @@ class GameController(Controller):
   def create(self):
     self.engine.clear_background()
 
-  def win(self):
+  def win(self, event):
     """Handle game state changes for win"""
     print "WIN"
 
-  def die(self):
+  def die(self, event):
     """Handle game state changes for die"""
     print "DIE"
 
