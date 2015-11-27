@@ -20,7 +20,7 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
 
     # Set up the screen
     self.screen = pygame.display.set_mode(
-      (self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
+      (SCREEN_WIDTH, SCREEN_HEIGHT)
     )
     self.screen.fill(WHITE)
     pygame.display.flip()
@@ -160,8 +160,8 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
 
 class FroggerGameEngine(GameEngine):
   """Frogger specific game engine"""
-  SCREEN_WIDTH = 300
-  SCREEN_HEIGHT = 500
+  SCREEN_WIDTH = SCREEN_WIDTH # i have added this into the consts file
+  SCREEN_HEIGHT = SCREEN_HEIGHT # i have added this into the consts file
 
   STATES = {
     'menu': [

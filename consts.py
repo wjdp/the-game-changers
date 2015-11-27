@@ -10,7 +10,7 @@ BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 COLORKEY = (255, 0, 255)
 
-#Keymap controls
+# Keymap controls
 
 from pygame.locals import *
 
@@ -27,3 +27,9 @@ KM_DOWN1 = K_s
 
 E_WIN = 5001
 E_DIE = 5002
+
+# Screen dimensions
+
+SCREEN_WIDTH = 785
+SCREEN_HEIGHT = 560
+
