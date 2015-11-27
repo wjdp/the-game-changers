@@ -80,6 +80,10 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
 
       if event.key == K_ESCAPE: self.keep_alive = False
 
+      # Debug commands
+      if event.key == K_o: print self.objects # Print all active objects
+      if event.key == K_c: print self.active_controllers # Print all active objects
+
       # Run event bindings in all the active controllers
       for controller in self.active_controllers:
         if event.key in controller.EVENT_BINDINGS:
