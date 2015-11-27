@@ -14,11 +14,11 @@ COLORKEY = (255, 0, 255)
 
 from pygame.locals import *
 
-KM_LFET = K_LEFT
-KM_RIGHT = K_RIGHT
-KM_UP = K_UP
-KM_DOWN = K_DOWN
-KM_LFET1 = K_a
+KM_LEFT = K_LEFT 
+KM_RIGHT = K_RIGHT 
+KM_UP = K_UP 
+KM_DOWN = K_DOWN 
+KM_LEFT1 = K_a
 KM_RIGHT1 = K_d
 KM_UP1 = K_w
 KM_DOWN1 = K_s

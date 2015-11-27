@@ -93,11 +93,11 @@ class PlayerController(Controller):
     self.player_object.move_to_start()
 
   EVENT_BINDINGS = {
-    KM_LFET: move_left,
+    KM_LEFT: move_left,
     KM_RIGHT:  move_right,
     KM_UP: move_up,
     KM_DOWN: move_down,
-	KM_LFET1: move_left,
+    KM_LEFT1: move_left,
     KM_RIGHT1:  move_right,
     KM_UP1: move_up,
     KM_DOWN1: move_down,
@@ -139,13 +139,25 @@ class GameOverController(Controller):
   pass
 
 class FPSCounterController(Controller):
+
   def create(self):
     self.font = pygame.font.SysFont("Arial", 16)
 
   def tick(self):
+    
     text = self.font.render(str(self.engine.get_fps()), True, YELLOW)
     self.engine.foreground_blit(text, (0, 0))
+    
 
-class GameScore(Controller):
+class GameScoreController(Controller):
+
   def create(self):
-    self.font = pygame.font.SysFont()
+    self.font = pygame.font.SysFont("verdana", 20, bold = True, italic = False)    
+
+  def tick(self):
+    self.scores = 0
+    self.points = 10
+    
+    text = self.font.render("Scores: " + str(self.scores), 1 , (0, 0, 255))
+    self.engine.foreground_blit(text, (0,0))    
+	
