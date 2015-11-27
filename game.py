@@ -84,6 +84,10 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
       if event.key == K_o: print self.objects # Print all active objects
       if event.key == K_c: print self.active_controllers # Print all active objects
 
+      if event.key == K_n: self.post_event(E_WIN) # Debug make win state
+      if event.key == K_m: self.post_event(E_DIE) # Debug make win state
+
+
       # Run event bindings in all the active controllers
       for controller in self.active_controllers:
         if event.key in controller.EVENT_BINDINGS:

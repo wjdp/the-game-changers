@@ -41,16 +41,20 @@ class MenuController(Controller):
   }
 
 class GameController(Controller):
+  level = 0
+
   def create(self):
     self.engine.clear_background()
 
   def win(self, event):
     """Handle game state changes for win"""
-    print "WIN"
+    self.level += 1
+    self.engine.post_event(E_LEVEL_UP, level=self.level)
+    self.engine.post_event(E_RESET_FROG)
 
   def die(self, event):
     """Handle game state changes for die"""
-    print "DIE"
+    self.engine.post_event(E_RESET_FROG)
 
   EVENT_BINDINGS = {
     E_WIN: win,
@@ -58,6 +62,9 @@ class GameController(Controller):
   }
 
 class PlayerController(Controller):
+  max_height = 0
+  current_height = 0
+
   def create(self):
     self.player_object = self.create_object(Frog, self)
 
@@ -72,10 +79,19 @@ class PlayerController(Controller):
     self.move((32, 0))
 
   def move_up(self):
+    self.current_height += 1
+    if self.max_height < self.current_height:
+      self.max_height = self.current_height
+      # Increase score
+      print "+1"
     self.move((0, -32))
 
   def move_down(self):
+    self.current_height -= 1
     self.move((0, 32))
+
+  def reset(self, event):
+    self.player_object.move_to_start()
 
   EVENT_BINDINGS = {
     KM_LFET: move_left,
@@ -86,6 +102,7 @@ class PlayerController(Controller):
     KM_RIGHT1:  move_right,
     KM_UP1: move_up,
     KM_DOWN1: move_down,
+    E_RESET_FROG: reset,
   }
 
 
@@ -111,6 +128,13 @@ class LevelController(Controller):
       self.create_object(Car, self, lane=4, delay=8),
     ]
 
+  def speed_up_cars(self, event):
+    for car in self.cars:
+      car.change_speed(event.level)
+
+  EVENT_BINDINGS = {
+    E_LEVEL_UP: speed_up_cars
+  }
 
 class GameOverController(Controller):
   pass

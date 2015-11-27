@@ -18,27 +18,39 @@ class Character(MovableObject):
 
 class Frog(Character):
   def create(self):
+    self.move_to_start()
+
+  def move_to_start(self):
+    """Move the frog to the starting position"""
     self.pos = (SCREEN_WIDTH / 2, SCREEN_HEIGHT - 64)
 
 
 class Car(Character):
-  SPEED = 0.06
+  SPEED = 0.04
+  SPEED_INCREMENT = 0.01
   LANE_HEIGHT = 32
   LANE_ORIGIN = SCREEN_WIDTH / 2
   CAR_WIDTH = 32
   CAR_SPACING = 64
 
   def create(self, lane, delay):
+    self.lane = lane
+
     py = self.LANE_ORIGIN - (self.LANE_HEIGHT * lane)
     px = delay * self.CAR_SPACING
     self.pos = (px, py)
 
-    if lane % 2:
+    self.change_speed(0) # Set level 0 speed
+
+  def change_speed(self, level):
+    speed = self.SPEED + (self.SPEED_INCREMENT * level)
+
+    if self.lane % 2:
       # Move to the right
-      self.velocity = (self.SPEED, 0)
+      self.velocity = (speed, 0)
     else:
       # Move to the left
-      self.velocity = (-self.SPEED, 0)
+      self.velocity = (-speed, 0)
 
   def tick_move(self):
     """Move the object based on velocity with wrapping"""
