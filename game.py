@@ -90,6 +90,17 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
           # Argument needed here to satisfy the need for self within method
           controller.EVENT_BINDINGS[event.key](controller)
 
+    elif hasattr(event, 'game_event'):
+      # Controller events
+      for controller in self.active_controllers:
+        if event.game_event in controller.EVENT_BINDINGS:
+          controller.EVENT_BINDINGS[event.game_event](controller, event)
+
+  def post_event(self, event, **kwargs):
+    """Post a controller event"""
+    ev = pygame.event.Event(pygame.USEREVENT, game_event = event, **kwargs)
+    pygame.event.post(ev)
+
   def clear_foreground(self):
     self.foreground_surface = self.get_screen_sized_surface()
 
