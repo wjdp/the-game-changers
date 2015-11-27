@@ -24,23 +24,14 @@ class Frog(Character):
 class Car(Character):
   SPEED = 0.06
   LANE_HEIGHT = 40
-  LANE_ORIGIN = SCREEN_WIDTH/2
+  LANE_ORIGIN = SCREEN_WIDTH / 2
   CAR_WIDTH = 32
   CAR_SPACING = 64
 
   def create(self, lane, delay):
     py = self.LANE_ORIGIN - (self.LANE_HEIGHT * lane)
-
-    #   # Start on LHS
-    #   px = -self.CAR_WIDTH - (delay * self.CAR_SPACING)
-    #   self.velocity = (self.SPEED, 0)
-    #   self.direction = 0
-    # else:
-    #   # Start on RHS
-    #   px = self.controller.engine.SCREEN_WIDTH + self.CAR_WIDTH + + (delay * self.CAR_SPACING)
-    #   self.velocity = (-self.SPEED, 0)
-
     px = delay * self.CAR_SPACING
+    self.pos = (px, py)
 
     if lane % 2:
       # Move to the right
@@ -48,8 +39,6 @@ class Car(Character):
     else:
       # Move to the left
       self.velocity = (-self.SPEED, 0)
-
-    self.pos = (px, py)
 
   def tick_move(self):
     """Move the object based on velocity with wrapping"""
