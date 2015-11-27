@@ -27,8 +27,7 @@ KM_DOWN1 = K_s
 
 E_WIN = 5001
 E_DIE = 5002
-E_LEVEL_UP = 5003
-E_RESET_FROG = 5004
+E_SOFT_RESET = 5003
 
 # Screen dimensions, we're using a 32x32 grid
 

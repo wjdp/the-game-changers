@@ -49,12 +49,11 @@ class GameController(Controller):
   def win(self, event):
     """Handle game state changes for win"""
     self.level += 1
-    self.engine.post_event(E_LEVEL_UP, level=self.level)
-    self.engine.post_event(E_RESET_FROG)
+    self.engine.post_event(E_SOFT_RESET, level=self.level)
 
   def die(self, event):
     """Handle game state changes for die"""
-    self.engine.post_event(E_RESET_FROG)
+    self.engine.post_event(E_SOFT_RESET, level=self.level)
 
   EVENT_BINDINGS = {
     E_WIN: win,
@@ -102,7 +101,7 @@ class PlayerController(Controller):
     KM_RIGHT1:  move_right,
     KM_UP1: move_up,
     KM_DOWN1: move_down,
-    E_RESET_FROG: reset,
+    E_SOFT_RESET: reset,
   }
 
 
@@ -133,7 +132,7 @@ class LevelController(Controller):
       car.change_speed(event.level)
 
   EVENT_BINDINGS = {
-    E_LEVEL_UP: speed_up_cars
+    E_SOFT_RESET: speed_up_cars
   }
 
 class GameOverController(Controller):
