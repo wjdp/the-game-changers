@@ -22,31 +22,51 @@ class Frog(Character):
 
 
 class Car(Character):
-  SPEED = 1
+  SPEED = 0.06
   LANE_HEIGHT = 40
   LANE_ORIGIN = SCREEN_WIDTH/2
   CAR_WIDTH = 32
-  CAR_SPACING = 64 
+  CAR_SPACING = 64
 
   def create(self, lane, delay):
     py = self.LANE_ORIGIN - (self.LANE_HEIGHT * lane)
+
+    #   # Start on LHS
+    #   px = -self.CAR_WIDTH - (delay * self.CAR_SPACING)
+    #   self.velocity = (self.SPEED, 0)
+    #   self.direction = 0
+    # else:
+    #   # Start on RHS
+    #   px = self.controller.engine.SCREEN_WIDTH + self.CAR_WIDTH + + (delay * self.CAR_SPACING)
+    #   self.velocity = (-self.SPEED, 0)
+
+    px = delay * self.CAR_SPACING
+
     if lane % 2:
-      # Start on LHS
-      px = -self.CAR_WIDTH - (delay * self.CAR_SPACING)
+      # Move to the right
       self.velocity = (self.SPEED, 0)
-      self.direction = 0
     else:
-      # Start on RHS
-      px = self.controller.engine.SCREEN_WIDTH + self.CAR_WIDTH + + (delay * self.CAR_SPACING)
+      # Move to the left
       self.velocity = (-self.SPEED, 0)
-      self.direction = 1
 
-    self.pos = [px, py]
-    
+    self.pos = (px, py)
 
-  def tick(self):
-    #super(Car, self,).tick()
-    self.pos[0] = (self.pos[0] + self.velocity[0]) % SCREEN_WIDTH
+  def tick_move(self):
+    """Move the object based on velocity with wrapping"""
+    if self.velocity[0] > 0 and self.pos[0] > SCREEN_WIDTH:
+      # Moving right, reposition to off the left of the screen
+      new_pos = (-self.CAR_WIDTH, self.pos[1])
+    elif self.velocity[0] < 0 and self.pos[0] < -self.CAR_WIDTH:
+      # Moving left, reposition to off the right of the screen
+      new_pos = (SCREEN_WIDTH + self.CAR_WIDTH, self.pos[1])
+    else:
+      # Car not offscreen, move as normal
+      new_pos = (
+        self.pos[0] + (self.velocity[0] * self.controller.engine.last_tick),
+        self.pos[1]
+      )
 
- 
+    self.pos = new_pos
+
+
 
