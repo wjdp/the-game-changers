@@ -96,6 +96,11 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
         if event.game_event in controller.EVENT_BINDINGS:
           controller.EVENT_BINDINGS[event.game_event](controller, event)
 
+    elif event.type == pygame.QUIT:
+      # Respond to the window manager's close button and all other cases of
+      #  being asked to quit
+      self.keep_alive = False
+
   def post_event(self, event, **kwargs):
     """Post a controller event"""
     ev = pygame.event.Event(pygame.USEREVENT, game_event = event, **kwargs)
