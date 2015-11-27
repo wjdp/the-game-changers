@@ -28,13 +28,10 @@ class Controller(BaseController, ObjectManagerMixin):
 
 class MenuController(Controller):
   def create(self):
-    print "Create menu controller"
     bg = pygame.image.load('images/menu.png')
     self.engine.clear_background()
     self.engine.background_blit(bg, ORIGIN)
 
-  def close(self):
-    print "Closing menu controller"
 
   def start_game(self):
     self.engine.setup_state('game')
@@ -62,7 +59,6 @@ class GameController(Controller):
 
 class PlayerController(Controller):
   def create(self):
-    print "Create player controller"
     self.player_object = self.create_object(Frog, self)
 
   def move(self, rel_pos):
@@ -95,7 +91,6 @@ class PlayerController(Controller):
 
 class LevelController(Controller):
   def create(self):
-    print "Create level controller"
     self.cars = [
       self.create_object(Car, self, lane=0, delay=0),
       self.create_object(Car, self, lane=0, delay=3),
@@ -118,9 +113,7 @@ class LevelController(Controller):
 
 
 class GameOverController(Controller):
-  def create(self):
-    print "Create game over controller"
-
+  pass
 
 class FPSCounterController(Controller):
   def create(self):
