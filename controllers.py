@@ -42,12 +42,14 @@ class MenuController(Controller):
 
 class GameController(Controller):
   level = 0
+  score = 0
 
   def create(self):
     self.engine.clear_background()
 
   def win(self, event):
     """Handle game state changes for win"""
+    self.add_score(POINTS_WIN)
     self.level += 1
     self.engine.post_event(E_SOFT_RESET, level=self.level)
 
@@ -55,9 +57,18 @@ class GameController(Controller):
     """Handle game state changes for die"""
     self.engine.post_event(E_SOFT_RESET, level=self.level)
 
+  def player_moved(self, event):
+    if event.progress:
+      self.add_score(POINTS_PROGRESSION)
+
+  def add_score(self, addition):
+    self.score += addition
+    self.engine.post_event(E_SCORE_CHANGED, score=self.score)
+
   EVENT_BINDINGS = {
     E_WIN: win,
     E_DIE: die,
+    E_HOP: player_moved,
   }
 
 class PlayerController(Controller):
@@ -73,21 +84,27 @@ class PlayerController(Controller):
 
   def move_left(self):
     self.move((-32, 0))
+    self.engine.post_event(E_HOP, direction=LEFT, progress=False)
 
   def move_right(self):
     self.move((32, 0))
+    self.engine.post_event(E_HOP, direction=RIGHT, progress=False)
 
   def move_up(self):
-    self.current_height += 1
-    if self.max_height < self.current_height:
-      self.max_height = self.current_height
-      # Increase score
-      print "+1"
     self.move((0, -32))
+
+    self.current_height += 1
+    progressed = self.max_height < self.current_height
+
+    self.engine.post_event(E_HOP, direction=LEFT, progress=progressed)
+
+    if progressed:
+      self.max_height = self.current_height
 
   def move_down(self):
     self.current_height -= 1
     self.move((0, 32))
+    self.engine.post_event(E_HOP, direction=DOWN, progress=False)
 
   def reset(self, event):
     self.player_object.move_to_start()
@@ -144,20 +161,25 @@ class FPSCounterController(Controller):
     self.font = pygame.font.SysFont("Arial", 16)
 
   def tick(self):
-    
+
     text = self.font.render(str(self.engine.get_fps()), True, YELLOW)
     self.engine.foreground_blit(text, (0, 0))
-    
 
-class GameScoreController(Controller):
+
+class ScoreTextController(Controller):
+  score = 0
 
   def create(self):
-    self.font = pygame.font.SysFont("verdana", 20, bold = True, italic = False)    
+    self.font = pygame.font.SysFont("verdana", 20, bold = True, italic = False)
+
+  def update_score(self, event):
+    self.score = event.score
 
   def tick(self):
-    self.scores = 0
-    self.points = 10
-    
-    text = self.font.render("Scores: " + str(self.scores), 1 , (0, 0, 255))
-    self.engine.foreground_blit(text, (0,0))    
-	
+    text = self.font.render("Score: " + str(self.score), 1 , (0, 0, 255))
+    self.engine.foreground_blit(text, (0,0))
+
+  EVENT_BINDINGS = {
+    E_SCORE_CHANGED: update_score,
+  }
+
