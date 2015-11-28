@@ -55,16 +55,22 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
     controller.destroy()
     self.active_controllers.remove(controller)
 
-  def setup_state(self, state):
+  def setup_state(self, state, purge=False):
     """Remove old controllers, start a new state's controllers"""
+    # Make a copy of active controller. This needs doing as looping over a list
+    # while removing items from that list causes the for loop to mis-index.
+    # Bug #17
+    active_controllers_copy = list(self.active_controllers)
     new_controllers = self.STATES[state]
 
     # Destroy controllers not in new state
-    for controller in set(self.active_controllers) - set(new_controllers):
-      self.destroy_controller(controller)
+    for controller in active_controllers_copy:
+      if controller.__class__ not in new_controllers or purge:
+        self.destroy_controller(controller)
 
     # Add controllers not already running
-    for controller in set(new_controllers) - set(self.active_controllers):
+    active_controller_classes = [c.__class__ for c in self.active_controllers]
+    for controller in set(new_controllers) - set(active_controller_classes):
       self.create_controller(controller)
 
   def purge_controllers(self):
@@ -176,8 +182,8 @@ class FroggerGameEngine(GameEngine):
       controllers.GameController,
       controllers.PlayerController,
       controllers.LevelController,
-      controllers.FPSCounterController,
       controllers.ScoreTextController,
+      controllers.FPSCounterController,
     ],
     'gameover': [
       controllers.GameController,

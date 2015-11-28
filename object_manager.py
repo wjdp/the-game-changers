@@ -22,7 +22,11 @@ class ObjectManagerMixin(object):
 
   def purge_objects(self):
     """Deletes all objects"""
-    for obj in self.objects:
+    # Make a copy of objects. This needs doing as looping over a list
+    # while removing items from that list causes the for loop to mis-index.
+    objects_copy = list(self.objects)
+
+    for obj in objects_copy:
       self.delete_object(obj)
 
   def tick_objects(self):

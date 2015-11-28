@@ -47,12 +47,21 @@ class GameController(Controller):
 
   def create(self):
     self.engine.clear_background()
+    self.reset()
+
+  def reset(self):
+    self.engine.post_event(
+      E_SOFT_RESET,
+      level=self.level,
+      lives=self.lives,
+      score=self.score
+    )
 
   def win(self, event):
     """Handle game state changes for win"""
     self.add_score(POINTS_WIN)
     self.level += 1
-    self.engine.post_event(E_SOFT_RESET, level=self.level, lives=self.lives)
+    self.reset()
 
   def die(self, event):
     """Handle game state changes for die"""
@@ -61,7 +70,7 @@ class GameController(Controller):
     if self.lives < 1:
       self.gameover()
 
-    self.engine.post_event(E_SOFT_RESET, level=self.level, lives=self.lives)
+    self.reset()
 
   def gameover(self):
     self.engine.setup_state('gameover')
@@ -163,7 +172,7 @@ class LevelController(Controller):
 
 class GameOverController(Controller):
   def restart(self):
-    self.engine.setup_state('game')
+    self.engine.setup_state('game', purge=True)
 
   EVENT_BINDINGS = {
     K_RETURN: restart
@@ -180,24 +189,26 @@ class FPSCounterController(Controller):
 
 
 class ScoreTextController(Controller):
-  score = 0
-  lives = LIVES
+  lives = None
+  score = None
 
   def create(self):
     self.font = pygame.font.SysFont("verdana", 20, bold = True, italic = False)
 
+  def update(self, event):
+    self.lives = event.lives
+    self.score = event.score
+
   def update_score(self, event):
     self.score = event.score
 
-  def update_lives(self, event):
-    self.lives = event.lives
-
   def tick(self):
-    text = self.font.render("Score: {} Lives: {}".format(self.score, self.lives), 1 , (0, 0, 255))
-    self.engine.foreground_blit(text, (0,0))
+    if self.lives is not None:
+      text = self.font.render("Score: {} Lives: {}".format(self.score, self.lives), 1 , (0, 0, 255))
+      self.engine.foreground_blit(text, (0,0))
 
   EVENT_BINDINGS = {
+    E_SOFT_RESET: update,
     E_SCORE_CHANGED: update_score,
-    E_SOFT_RESET: update_lives,
   }
 
