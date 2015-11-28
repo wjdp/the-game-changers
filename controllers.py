@@ -43,6 +43,7 @@ class MenuController(Controller):
 class GameController(Controller):
   level = 0
   score = 0
+  lives = LIVES
 
   def create(self):
     self.engine.clear_background()
@@ -51,11 +52,19 @@ class GameController(Controller):
     """Handle game state changes for win"""
     self.add_score(POINTS_WIN)
     self.level += 1
-    self.engine.post_event(E_SOFT_RESET, level=self.level)
+    self.engine.post_event(E_SOFT_RESET, level=self.level, lives=self.lives)
 
   def die(self, event):
     """Handle game state changes for die"""
-    self.engine.post_event(E_SOFT_RESET, level=self.level)
+    self.lives -= 1
+
+    if self.lives < 1:
+      self.gameover()
+
+    self.engine.post_event(E_SOFT_RESET, level=self.level, lives=self.lives)
+
+  def gameover(self):
+    self.engine.setup_state('gameover')
 
   def player_moved(self, event):
     if event.progress:
@@ -153,7 +162,12 @@ class LevelController(Controller):
   }
 
 class GameOverController(Controller):
-  pass
+  def restart(self):
+    self.engine.setup_state('game')
+
+  EVENT_BINDINGS = {
+    K_RETURN: restart
+  }
 
 class FPSCounterController(Controller):
 
@@ -161,13 +175,13 @@ class FPSCounterController(Controller):
     self.font = pygame.font.SysFont("Arial", 16)
 
   def tick(self):
-
     text = self.font.render(str(self.engine.get_fps()), True, YELLOW)
     self.engine.foreground_blit(text, (0, 0))
 
 
 class ScoreTextController(Controller):
   score = 0
+  lives = LIVES
 
   def create(self):
     self.font = pygame.font.SysFont("verdana", 20, bold = True, italic = False)
@@ -175,11 +189,15 @@ class ScoreTextController(Controller):
   def update_score(self, event):
     self.score = event.score
 
+  def update_lives(self, event):
+    self.lives = event.lives
+
   def tick(self):
-    text = self.font.render("Score: " + str(self.score), 1 , (0, 0, 255))
+    text = self.font.render("Score: {} Lives: {}".format(self.score, self.lives), 1 , (0, 0, 255))
     self.engine.foreground_blit(text, (0,0))
 
   EVENT_BINDINGS = {
     E_SCORE_CHANGED: update_score,
+    E_SOFT_RESET: update_lives,
   }
 

@@ -180,6 +180,7 @@ class FroggerGameEngine(GameEngine):
       controllers.ScoreTextController,
     ],
     'gameover': [
+      controllers.GameController,
       controllers.GameOverController,
     ]
   }
