@@ -204,8 +204,8 @@ class ScoreTextController(Controller):
 
   def tick(self):
     if self.lives is not None:
-      text = self.font.render("Score: {} Lives: {}".format(self.score, self.lives), 1 , (0, 0, 255))
-      self.engine.foreground_blit(text, (0,0))
+      text = self.font.render("Score: {} Lives: {}".format(self.score, self.lives), 1 , BLUE)
+      self.engine.foreground_blit(text, (600,0))
 
   EVENT_BINDINGS = {
     E_SOFT_RESET: update,
