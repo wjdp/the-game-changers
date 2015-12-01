@@ -1,0 +1,82 @@
+import os, sys
+import pygame
+pygame.init()
+from pygame.locals import *
+
+def load_image(name, colorkey=None):
+    fullname = os.path.join('data', 'images')
+    fullname = os.path.join(fullname, name)
+    try:
+        image = pygame.image.load(fullname)
+    except pygame.error, message:
+        print 'Cannot load image:', fullname
+        raise SystemExit, message
+    image = image.convert()
+    Magenta=255,0,255
+    if colorkey is not None:
+        if colorkey is -1:
+            image.set_colorkey(Magenta)
+    return image, image.get_rect()
+    
+class Main:
+    
+    def __init__(self, width=785, height=560):
+        pygame.init()
+        self.width=width
+        self.height=height
+        self.screen=pygame.display.set_mode((785,560))
+    
+    def Loop(self):
+        self.LoadSprites();
+        pygame.key.set_repeat(500, 30)
+        self.background = pygame.Surface(self.screen.get_size())
+        self.image, self.rect = load_image("Background.png",-1)
+        
+        while 1:
+            for event in pygame.event.get():
+                if event.type ==pygame.QUIT:
+                    sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    if ((event.key == K_RIGHT)
+                    or (event.key == K_LEFT)
+                    or (event.key == K_UP )
+                    or (event.key == K_DOWN)):
+                        self.chicken.move(event.key)
+
+            self.screen.blit(self.image,(0,0))
+            self.chicken_sprites.draw(self.screen)
+            pygame.display.flip()
+
+    def LoadSprites(self):
+        self.chicken=Chicken()
+        self.chicken_sprites=pygame.sprite.RenderPlain((self.chicken))
+        
+class Chicken(pygame.sprite.Sprite) :
+    
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect=load_image("chicken.png",-1)
+        self.rect.move_ip(365,505)
+        self.x_dist= 10
+        self.y_dist = 51
+        
+    def move(self,key):
+        xMove =0;
+        yMove =0;
+        if (key == K_RIGHT):
+            xMove = self.x_dist
+        elif (key == K_LEFT):
+            xMove = -self.x_dist
+        elif (key == K_UP):
+            yMove = -self.y_dist
+        elif (key == K_DOWN):
+            yMove = self.y_dist  
+        self.rect.move_ip(xMove,yMove)
+                
+        
+if __name__ == "__main__":
+    MainWindow = Main()
+    MainWindow.Loop()
+
+
+        
