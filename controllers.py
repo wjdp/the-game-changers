@@ -60,26 +60,29 @@ class MenuController(Controller):
     K_RETURN: start_game
   }
 
-class GameSoundController(Controller):
+class SoundController(Controller):
   BACKGROUND_VOLUME = 0.3
 
-  def create (self):
+  def create(self):
     pygame.mixer.init()
     self.sound = pygame.mixer.Sound('sounds/GameSoundtrack.wav')
     self.sound.set_volume(self.BACKGROUND_VOLUME)
     self.sound.play()
 
-  def Win(self, event):
-    win = pygame.mixer.Sound('sounds/GameWin.wav')
-    win.play()
+    # Preload sounds
+    self.win = pygame.mixer.Sound('sounds/GameWin.wav')
+    self.die = pygame.mixer.Sound('sounds/GameDie.wav')
 
-  def Die(self, event):
-    die = pygame.mixer.Sound('sounds/GameDie.wav')
-    die.play()
+
+  def win(self, event):
+    self.win.play()
+
+  def die(self, event):
+    self.die.play()
 
   EVENT_BINDINGS = {
-    E_WIN: Win,
-    E_DIE: Die,
+    E_WIN: win,
+    E_DIE: die,
   }
 
 
