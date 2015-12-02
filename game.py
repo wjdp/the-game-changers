@@ -100,6 +100,7 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
       #  quitting at the end of the current tick
 
       if event.key == K_ESCAPE: self.keep_alive = False
+      if event.key == K_F12: pygame.display.toggle_fullscreen()
 
       # Debug commands
       if event.key == K_o: print self.objects # Print all active objects
@@ -107,7 +108,6 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
 
       if event.key == K_n: self.post_event(E_WIN) # Debug make win state
       if event.key == K_m: self.post_event(E_DIE) # Debug make win state
-
 
       # Run event bindings in all the active controllers
       for controller in self.active_controllers:
