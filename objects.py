@@ -23,7 +23,7 @@ class Object(object):
 
   def draw(self):
     if self.get_image():
-      return None
+      return self.get_image()
     else:
       return self.get_placeholder()
 

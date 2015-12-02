@@ -17,6 +17,7 @@ class Character(MovableObject):
     pass
 
 class Frog(Character):
+  IMAGE = "chicken.png"
   def create(self):
     self.move_to_start()
 
