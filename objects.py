@@ -10,7 +10,7 @@ class Object(object):
   def __init__(self, controller, pos=(0,0)):
     self.controller = controller
     self.pos = pos
-    self.rect = pygame.Rect(pos ,(32, 32))
+    self.rect = pygame.Rect(pos, (32, 32))
 
   def get_image(self, image_path=None):
     if hasattr(self, 'image'):
@@ -41,7 +41,7 @@ class Object(object):
       return self.get_placeholder()
 
   def tick(self):
-    pass
+    self.rect = pygame.Rect(self.pos, (32, 32))
 
   def destroy(self):
     pass
@@ -64,21 +64,10 @@ class MovableObject(Object):
 
 
 class CollisionDetectionObject(Object):
-
-  def collision_check(self, all_objects):
-    print "collision check 1 start"
-    for obj in all_objects:
-      print "collision check 2 continue"
+  def collision_check(self):
+    for obj in self.controller.engine.objects:
       if not obj is self:
-        print "collision check 3 continue"
-        if not self.rect.colliderect(obj.rect):
-          print "collision check 4 return True self: {} obj: {}" .format(type(self), type(obj))
-          return True
-        else:
-          return False
-          print "collision check 5 False {}"  .format(type(self.rect))
-      else:
-        print "collision check 6 else"
+        if not self.rect.colliderect(obj.rect) == 0:
+          return obj
 
-
-
+    return False

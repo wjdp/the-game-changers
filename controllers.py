@@ -150,23 +150,24 @@ class PlayerController(Controller):
     self.player_object = self.create_object(Frog, self)
     self.max_height = 0
     self.current_height = 0
+    self.active = True
 
   def move(self, rel_pos):
     cp = self.player_object.pos
     self.player_object.pos = (cp[0] + rel_pos[0], cp[1] + rel_pos[1])
 
   def move_left(self):
-    if not self.player_object.pos[0] <= self.LEFT_BOUND:
+    if not self.player_object.pos[0] <= self.LEFT_BOUND and self.active:
       self.move((-32, 0))
       self.engine.post_event(E_HOP, direction=LEFT, progress=False)
 
   def move_right(self):
-    if not self.player_object.pos[0] >= self.RIGHT_BOUND:
+    if not self.player_object.pos[0] >= self.RIGHT_BOUND and self.active:
       self.move((32, 0))
       self.engine.post_event(E_HOP, direction=RIGHT, progress=False)
 
   def move_up(self):
-    if not self.player_object.pos[1] <= self.TOP_BOUND:
+    if not self.player_object.pos[1] <= self.TOP_BOUND and self.active:
       self.move((0, -32))
 
       self.current_height += 1
@@ -178,20 +179,26 @@ class PlayerController(Controller):
         self.max_height = self.current_height
 
   def move_down(self):
-    if not self.player_object.pos[1] >= self.BOTTOM_BOUND:
+    if not self.player_object.pos[1] >= self.BOTTOM_BOUND and self.active:
       self.current_height -= 1
       self.move((0, 32))
       self.engine.post_event(E_HOP, direction=DOWN, progress=False)
 
   def reset(self, event):
-    self.player_object.move_to_start
+    self.player_object.move_to_start()
+    self.active = True
 
   def tick(self):
     super(PlayerController, self).tick()
-    if self.player_object.collision_check(self.engine.objects):
-      self.engine.post_event(E_DIE)
-      print "die"
-
+    collision_object = self.player_object.collision_check()
+    if collision_object and self.active:
+      if isinstance(collision_object, Car):
+        # Collided with Car, so die
+        self.active = False
+        self.engine.post_event(E_DIE)
+      elif isinstance(collision_object, Egg):
+        self.active = False
+        self.engine.post_event(E_WIN)
 
   EVENT_BINDINGS = {
     KM_LEFT: move_left,
