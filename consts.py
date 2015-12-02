@@ -10,7 +10,7 @@ BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 COLORKEY = (255, 0, 255)
 
-BLUELORRY = "bluelorry1.png"
+BLUELORRY = "bluelorry.png"
 GREENLORRY = "greenlorry.png"
 CHICKEN = "chicken.png"
 EGG = "egg.png"
