@@ -235,7 +235,7 @@ class LevelController(Controller):
 class FPSCounterController(Controller):
 
   def create(self):
-    self.font = pygame.font.SysFont("Arial", 16)
+    self.font = pygame.font.Font(FONT_ACTION_MAN, 16)
 
   def tick(self):
     text = self.font.render(str(self.engine.get_fps()), True, YELLOW)
@@ -247,7 +247,7 @@ class ScoreTextController(Controller):
   score = None
 
   def create(self):
-    self.font = pygame.font.SysFont("verdana", 20, bold = True, italic = False)
+    self.font = pygame.font.Font(FONT_ACTION_MAN, 20, bold = True, italic = False)
 
   def update(self, event):
     self.lives = event.lives
@@ -270,14 +270,13 @@ class ScoreTextController(Controller):
 class GameOverController(Controller):
   def create(self):
     self.engine.clear_background()
-    self.font = pygame.font.SysFont("Arial", 16)
+    self.font = pygame.font.Font(FONT_ACTION_MAN, 64)
 
     self.score = self.messages['score']
 
   def tick(self):
     text = self.font.render("Your Score: {}".format(self.score), True, YELLOW)
     self.engine.foreground_blit(text, (32, 32))
-    print text
 
   def restart(self):
     self.engine.setup_state('game', purge=True)

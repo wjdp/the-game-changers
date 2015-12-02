@@ -10,6 +10,10 @@ BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 COLORKEY = (255, 0, 255)
 
+# Fonts
+FONT_ACTION_MAN = "fonts/Action_Man.ttf"
+FONT_ACTION_MAN = "fonts/Action_Man_Bold.ttf"
+
 # Images
 BLUELORRY = "bluelorry.png"
 GREENLORRY = "greenlorry.png"
