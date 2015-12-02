@@ -49,7 +49,7 @@ class Car(Character):
 
     self.set_speed((level + 1) * speed_multiplier)
 
-    self.image = pygame.image.load('images/{}'.format(image_path))
+    self.image = self.get_image(image_path)
     if self.lane % 2:
       # If move to right, flip image in x
       self.image = pygame.transform.flip(self.image, True, False)

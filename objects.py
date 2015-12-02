@@ -8,14 +8,22 @@ class Object(object):
   def __init__(self, controller):
     self.controller = controller
 
-  def get_image(self):
+  def get_image(self, image_path=None):
     if hasattr(self, 'image'):
+      # Image already loaded, return it
       return self.image
+    elif image_path:
+      # Provided image path
+      selected_image_path = image_path
     elif hasattr(self, 'IMAGE'):
-      self.image = pygame.image.load('images/{}'.format(self.IMAGE))
-      return self.image
+      # Class has IMAGE const
+      selected_image_path = self.IMAGE
     else:
+      # No image path
       return None
+
+    self.image = pygame.image.load('images/{}'.format(selected_image_path)).convert_alpha()
+    return self.image
 
   def get_placeholder(self):
     placeholder_surface = pygame.Surface((32, 32))

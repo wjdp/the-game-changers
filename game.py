@@ -32,6 +32,10 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
     pygame.display.set_caption(self.GAME_TITLE)
     pygame.display.flip()
 
+    # Set up the surfaces
+    self.background_surface = self.get_screen_sized_surface()
+    self.foreground_surface = self.get_screen_sized_surface()
+
     # Set up the clock
     self.clock = pygame.time.Clock()
 
@@ -48,9 +52,6 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
   def get_fps(self):
     """Return the framerate, computed from last 10 clocks"""
     return int(self.clock.get_fps())
-
-  def get_screen_sized_surface(self):
-    return pygame.Surface((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
 
   def create_controller(self, controller):
     new_controller = controller(self)
@@ -121,15 +122,14 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
     ev = pygame.event.Event(pygame.USEREVENT, game_event = event, **kwargs)
     pygame.event.post(ev)
 
-  def clear_foreground(self):
-    self.foreground_surface = self.get_screen_sized_surface()
+  def get_screen_sized_surface(self):
+    return pygame.Surface((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.SRCALPHA).convert_alpha()
 
-    # Set and fill with the colorkey (the colour that means transparent)
-    self.foreground_surface.set_colorkey(COLORKEY)
-    self.foreground_surface.fill(COLORKEY)
+  def clear_foreground(self):
+    self.foreground_surface.fill(pygame.SRCALPHA)
 
   def clear_background(self):
-    self.background_surface = self.get_screen_sized_surface()
+    self.background_surface.fill(BLACK)
 
   def foreground_blit(self, surface, coord):
     self.foreground_surface.blit(surface, coord)
