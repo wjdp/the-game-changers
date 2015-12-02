@@ -23,6 +23,7 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
       (SCREEN_WIDTH, SCREEN_HEIGHT)
     )
     self.screen.fill(WHITE)
+    pygame.display.set_caption('The Chicken Game')
     pygame.display.flip()
 
     # Set up the clock
