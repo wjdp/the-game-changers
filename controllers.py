@@ -72,8 +72,10 @@ class SoundController(Controller):
     # Preload sounds
     self.win = pygame.mixer.Sound('sounds/GameWin.wav')
     self.die = pygame.mixer.Sound('sounds/GameDie.wav')
-
-
+	
+  def destroy(self):
+	 pygame.mixer.stop()
+     
   def win(self, event):
     self.win.play()
 
