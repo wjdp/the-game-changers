@@ -97,39 +97,47 @@ class GameController(Controller):
   }
 
 class PlayerController(Controller):
-  max_height = 0
-  current_height = 0
+  LEFT_BOUND = 0
+  RIGHT_BOUND = SCREEN_WIDTH - 32
+  TOP_BOUND = 32
+  BOTTOM_BOUND = SCREEN_HEIGHT - (32 * 2)
 
   def create(self):
     self.player_object = self.create_object(Frog, self)
+    self.max_height = 0
+    self.current_height = 0
 
   def move(self, rel_pos):
     cp = self.player_object.pos
     self.player_object.pos = (cp[0] + rel_pos[0], cp[1] + rel_pos[1])
 
   def move_left(self):
-    self.move((-32, 0))
-    self.engine.post_event(E_HOP, direction=LEFT, progress=False)
+    if not self.player_object.pos[0] <= self.LEFT_BOUND:
+      self.move((-32, 0))
+      self.engine.post_event(E_HOP, direction=LEFT, progress=False)
 
   def move_right(self):
-    self.move((32, 0))
-    self.engine.post_event(E_HOP, direction=RIGHT, progress=False)
+    if not self.player_object.pos[0] >= self.RIGHT_BOUND:
+      self.move((32, 0))
+      self.engine.post_event(E_HOP, direction=RIGHT, progress=False)
 
   def move_up(self):
-    self.move((0, -32))
+    if not self.player_object.pos[1] <= self.TOP_BOUND:
+      self.move((0, -32))
 
-    self.current_height += 1
-    progressed = self.max_height < self.current_height
+      self.current_height += 1
+      progressed = self.max_height < self.current_height
 
-    self.engine.post_event(E_HOP, direction=LEFT, progress=progressed)
+      self.engine.post_event(E_HOP, direction=LEFT, progress=progressed)
 
-    if progressed:
-      self.max_height = self.current_height
+      if progressed:
+        self.max_height = self.current_height
 
   def move_down(self):
-    self.current_height -= 1
-    self.move((0, 32))
-    self.engine.post_event(E_HOP, direction=DOWN, progress=False)
+    if not self.player_object.pos[1] >= self.BOTTOM_BOUND:
+      self.current_height -= 1
+      self.move((0, 32))
+      self.engine.post_event(E_HOP, direction=DOWN, progress=False)
 
   def reset(self, event):
     self.player_object.move_to_start()
@@ -152,15 +160,21 @@ class LevelController(Controller):
   # Define the car generator variables
   # List of lanes, each element (num_of_cars, (delay_low, delay_high), speed_multiplier)
   CAR_GENERATOR_VARS = [
-    (3, (3,8), 5),
-    (4, (3,5), 1), # s
+    (2, (6,16), 1), # Lane 1
+    (6, (3,5), 1),
     (4, (3,5), 1),
-    (6, (2,12), 1), # s
+    (0, None, None), # Pavement
+    (6, (2,12), 1),
     (4, (3,5), 1),
+    (2, (6,16), 4),
     (4, (3,5), 1),
     (4, (3,5), 1),
     (0, None, None), # Pavement
-    (2, (3,5), 5),
+    (4, (3,5), 1),
+    (4, (3,5), 1),
+    (4, (3,5), 1),
+    (4, (3,5), 1),
+    (4, (3,5), 1),
     (4, (3,5), 1),
     (4, (3,5), 1),
     (4, (3,5), 1),
