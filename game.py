@@ -1,9 +1,6 @@
 import sys, pygame
 from pygame.locals import *
 
-pygame.mixer.init()
-sound = pygame.mixer.Sound('sounds/GameSoundtrack.wav')
-sound.play()
 
 from consts import *
 from object_manager import ObjectManagerMixin
@@ -202,6 +199,7 @@ class FroggerGameEngine(GameEngine):
       controllers.LevelController,
       controllers.ScoreTextController,
       controllers.FPSCounterController,
+	  controllers.GameSoundController,
     ],
     'gameover': [
       controllers.GameController,

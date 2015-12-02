@@ -6,6 +6,8 @@ from consts import *
 from object_manager import ObjectManagerMixin
 from characters import *
 
+
+
 class BaseController(object):
   pass
 
@@ -57,7 +59,29 @@ class MenuController(Controller):
   EVENT_BINDINGS = {
     K_RETURN: start_game
   }
-
+ 
+class GameSoundController(Controller):
+  
+  def create (self):
+    pygame.mixer.init()
+    self.sound = pygame.mixer.Sound('sounds/GameSoundtrack.wav')
+    self.sound.play()
+ 
+  def Win(self, event):
+    win = pygame.mixer.Sound('sounds/GameWin.wav')
+    win.play()
+	
+  def Die(self, event):
+    die = pygame.mixer.Sound('sounds/GameDie.Wav')
+    die.play()
+	
+  EVENT_BINDINGS = {
+    E_WIN: Win,
+    E_DIE: Die,
+  }	
+	
+	
+	
 class GameController(Controller):
   level = 1
   score = 0
