@@ -10,18 +10,27 @@ BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 COLORKEY = (255, 0, 255)
 
+<<<<<<< d2a1b7d7feb8e55a03841f6b066ec76740990015
+=======
+# Images
+>>>>>>> Car images with random choice
 BLUELORRY = "bluelorry.png"
 GREENLORRY = "greenlorry.png"
+LORRIES = [BLUELORRY, GREENLORRY]
+
+REDTRUCK = "redtruck.png"
+YELLOWTRUCK = "yellowtruck.png"
+TRUCKS = [REDTRUCK, YELLOWTRUCK]
+
+ORANGECAR = "orangecar.png"
+PINKCAR = "pinkcar.png"
+CARS = [ORANGECAR, PINKCAR]
+
 CHICKEN = "chicken.png"
+
 EGG = "egg.png"
 INTRO = "intro.png"
 END = "end.png"
-LOG = "log.png"
-REDTRUCK = "redtruck.png"
-YELLOWTRUCK = "yellowtruck.png"
-ORANGECAR = "orangecar.png"
-PINKCAR = "pinkcar.png"
-
 
 # Keymap controls
 

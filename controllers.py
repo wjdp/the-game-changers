@@ -160,16 +160,17 @@ class PlayerController(Controller):
 
 class LevelController(Controller):
   # Define the car generator variables
-  # List of lanes, each element (num_of_cars, (delay_low, delay_high), speed_multiplier)
-  LORRY_LANE_1 = (6, (3,5), .5)
-  LORRY_LANE_2 = (6, (3,5), .6)
+  # List of lanes, each element:
+  # (num_of_cars, (delay_low, delay_high), speed_multiplier, images)
+  LORRY_LANE_1 = (6, (3,5), .5, LORRIES)
+  LORRY_LANE_2 = (6, (3,5), .6, LORRIES)
 
-  CAR_LANE_1 = (7, (2,4), 0.2)
-  CAR_LANE_2 = (6, (3,5), 0.7)
-  CAR_LANE_3 = (5, (4,6), 1)
+  CAR_LANE_1 = (7, (2,4), 0.2, TRUCKS)
+  CAR_LANE_2 = (6, (3,5), 0.7, TRUCKS)
+  CAR_LANE_3 = (5, (4,6), 1, TRUCKS)
 
-  FAST_CAR_LANE_1 = (3, (4,10), 5)
-  FAST_CAR_LANE_2 = (2, (6,15), 6)
+  FAST_CAR_LANE_1 = (3, (4,10), 5, CARS)
+  FAST_CAR_LANE_2 = (2, (6,15), 6, CARS)
 
   PAVEMENT = (0, None, None)
 
@@ -212,11 +213,13 @@ class LevelController(Controller):
       total_delay = 0
       for j in range(lane[0]):
         total_delay += random.randrange(*lane[1])
+        image_path = random.choice(lane[3])
         car = self.create_object(Car, self,
           lane=i,
           delay=total_delay,
           level=event.level,
           speed_multiplier=lane[2],
+          image_path=image_path,
         )
         self.cars.append(car)
 

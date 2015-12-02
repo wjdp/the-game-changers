@@ -1,6 +1,7 @@
+import pygame
+
 from objects import MovableObject
 from consts import *
-
 
 class Character(MovableObject):
   """Characters are objects that are a bit more intelligent. They know
@@ -32,7 +33,6 @@ class Egg(Character):
   PLACEHOLDER_COLOUR = GREEN
 
 class Car(Character):
-  IMAGE = BLUELORRY
   SPEED = 0.04
   SPEED_INCREMENT = 0.01
   LANE_HEIGHT = 32
@@ -40,7 +40,7 @@ class Car(Character):
   CAR_WIDTH = 32
   CAR_SPACING = 64
 
-  def create(self, lane, delay, level, speed_multiplier):
+  def create(self, lane, delay, level, speed_multiplier, image_path):
     self.lane = lane
 
     py = self.LANE_ORIGIN - (self.LANE_HEIGHT * lane)
@@ -48,6 +48,11 @@ class Car(Character):
     self.pos = (px, py)
 
     self.set_speed((level + 1) * speed_multiplier)
+
+    self.image = pygame.image.load('images/{}'.format(image_path))
+    if self.lane % 2:
+      # If move to right, flip image in x
+      self.image = pygame.transform.flip(self.image, True, False)
 
   def set_speed(self, level):
     speed = self.SPEED + (self.SPEED_INCREMENT * level)
