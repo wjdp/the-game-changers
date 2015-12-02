@@ -31,6 +31,7 @@ class Egg(Character):
   PLACEHOLDER_COLOUR = GREEN
 
 class Car(Character):
+  IMAGE = "bluelorry.png"
   SPEED = 0.04
   SPEED_INCREMENT = 0.01
   LANE_HEIGHT = 32

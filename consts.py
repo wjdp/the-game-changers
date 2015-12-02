@@ -10,6 +10,19 @@ BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 COLORKEY = (255, 0, 255)
 
+BLUELORRY = "bluelorry1.png"
+GREENLORRY = "greenlorry.png"
+CHICKEN = "chicken.png"
+EGG = "egg.png"
+INTRO = "intro.png"
+END = "end.png"
+LOG = "log.png"
+REDTRUCK = "redtruck.png"
+YELLOWTRUCK = "yellowtruck.png"
+ORANGECAR = "orangecar.png"
+PINKCAR = "pinkcar.png"
+
+
 # Keymap controls
 
 from pygame.locals import *
