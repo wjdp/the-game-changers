@@ -39,7 +39,6 @@ class MenuController(Controller):
     self.engine.clear_background()
     self.engine.background_blit(bg, ORIGIN)
 
-
   def start_game(self):
     self.engine.setup_state('game')
 
@@ -53,7 +52,10 @@ class GameController(Controller):
   lives = LIVES
 
   def create(self):
+    bg = pygame.image.load('images/background.png')
     self.engine.clear_background()
+    self.engine.background_blit(bg, ORIGIN)
+
     self.reset()
 
   def reset(self):
