@@ -20,6 +20,7 @@ class Character(MovableObject):
 class Frog(Character, CollisionDetectionObject):
   IMAGE = "chicken.png"
   PLACEHOLDER_COLOUR = RED
+  Z_INDEX = 5
 
   def create(self):
     self.move_to_start()

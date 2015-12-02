@@ -40,6 +40,8 @@ EGG = "egg.png"
 INTRO = "intro.png"
 END = "end.png"
 
+DEAD_CHICKEN = "dead_chicken.png"
+
 # Keymap controls
 
 from pygame.locals import *

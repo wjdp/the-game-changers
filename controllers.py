@@ -5,7 +5,7 @@ from pygame.locals import *
 from consts import *
 from object_manager import ObjectManagerMixin
 from characters import *
-from objects import Egg
+from objects import Egg, DeadChicken
 
 class BaseController(object):
   pass
@@ -71,10 +71,10 @@ class SoundController(Controller):
     # Preload sounds
     self.win = pygame.mixer.Sound('sounds/GameWin.wav')
     self.die = pygame.mixer.Sound('sounds/GameDie.wav')
-	
+
   def destroy(self):
 	 pygame.mixer.stop()
-     
+
   def win(self, event):
     self.win.play()
 
@@ -296,7 +296,7 @@ class FPSCounterController(Controller):
     # If fps active, blit to top left
     if self.show_fps:
       text = self.font.render(str(self.engine.get_fps()), True, RED)
-      self.engine.foreground_blit(text, (0, 0))
+      self.engine.foreground_blit(text, (300, 0))
 
   def toggle_fps(self):
     self.show_fps = not self.show_fps
@@ -343,6 +343,26 @@ class ScoreTextController(Controller):
   EVENT_BINDINGS = {
     E_SOFT_RESET: update,
     E_SCORE_CHANGED: update_score,
+  }
+
+
+class DeathPopupController(Controller):
+  popup = None
+
+  def create(self):
+    self.hide_popup = 0
+
+  def show_popup(self, event):
+    self.popup = self.create_object(DeadChicken, self)
+    self.popup.set_pos_centre()
+    self.hide_popup = self.engine.get_ticks() + 1000
+
+  def tick(self):
+    if self.popup is not None and self.engine.get_ticks() > self.hide_popup:
+      self.purge_objects()
+
+  EVENT_BINDINGS = {
+    E_DIE: show_popup,
   }
 
 

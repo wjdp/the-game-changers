@@ -157,6 +157,9 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
     # Controller actions
     for controller in self.active_controllers: controller.tick()
 
+    # Sort objects by Z_INDEX
+    self.objects.sort(key = lambda obj: obj.Z_INDEX)
+
     # Draw active objects to the foreground
     for obj in self.objects:
       obj_surface = obj.draw()
@@ -200,6 +203,7 @@ class FroggerGameEngine(GameEngine):
       controllers.ScoreTextController,
       controllers.FPSCounterController,
 	    controllers.SoundController,
+      controllers.DeathPopupController,
     ],
     'gameover': [
       controllers.GameController,
