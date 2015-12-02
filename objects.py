@@ -1,12 +1,16 @@
 import pygame
+from pygame.locals import *
+
 
 from consts import *
 
 class Object(object):
   PLACEHOLDER_COLOUR = YELLOW
 
-  def __init__(self, controller):
+  def __init__(self, controller, pos=(0,0)):
     self.controller = controller
+    self.pos = pos
+    self.rect = pygame.Rect(pos, (32, 32))
 
   def get_image(self, image_path=None):
     if hasattr(self, 'image'):
@@ -26,8 +30,8 @@ class Object(object):
     return self.image
 
   def get_placeholder(self):
-    placeholder_surface = pygame.Surface((32, 32))
-    placeholder_surface.fill(self.PLACEHOLDER_COLOUR)
+    placeholder_surface = pygame.Surface(self.rect.size)
+    placeholder_surface.fill(YELLOW)
     return placeholder_surface
 
   def draw(self):
@@ -37,7 +41,7 @@ class Object(object):
       return self.get_placeholder()
 
   def tick(self):
-    pass
+    self.rect = pygame.Rect(self.pos, (32, 32))
 
   def destroy(self):
     pass
@@ -56,3 +60,14 @@ class MovableObject(Object):
         self.pos[1] + (self.velocity[1] * self.controller.engine.last_tick)
     )
     self.pos = new_pos
+
+
+
+class CollisionDetectionObject(Object):
+  def collision_check(self):
+    for obj in self.controller.engine.objects:
+      if not obj is self:
+        if not self.rect.colliderect(obj.rect) == 0:
+          return obj
+
+    return False

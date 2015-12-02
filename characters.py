@@ -1,6 +1,6 @@
 import pygame
 
-from objects import MovableObject
+from objects import MovableObject, CollisionDetectionObject
 from consts import *
 
 class Character(MovableObject):
@@ -17,7 +17,7 @@ class Character(MovableObject):
     """Should return a position, if not will default to Object's default"""
     self.pos = pos
 
-class Frog(Character):
+class Frog(Character, CollisionDetectionObject):
   IMAGE = "chicken.png"
   PLACEHOLDER_COLOUR = RED
 

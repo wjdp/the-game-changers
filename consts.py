@@ -68,7 +68,7 @@ DOWN = 4
 
 # Scoring
 
-LIVES = 3 # Number of lives a player starts with
+LIVES = 5 # Number of lives a player starts with
 POINTS_PROGRESSION = 1 # Points for a 'progression', a non repeatable hop up
 POINTS_WIN = 10 # Points for completing a level
 
