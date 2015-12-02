@@ -48,7 +48,7 @@ class MenuController(Controller):
   }
 
 class GameController(Controller):
-  level = 0
+  level = 1
   score = 0
   lives = LIVES
 
@@ -139,6 +139,7 @@ class PlayerController(Controller):
     KM_RIGHT:  move_right,
     KM_UP: move_up,
     KM_DOWN: move_down,
+
     KM_LEFT1: move_left,
     KM_RIGHT1:  move_right,
     KM_UP1: move_up,
@@ -149,35 +150,47 @@ class PlayerController(Controller):
 
 class LevelController(Controller):
   # Define the car generator variables
-  # List of lanes, each element (num_of_cars, (delay_low, delay_high))
+  # List of lanes, each element (num_of_cars, (delay_low, delay_high), speed_multiplier)
   CAR_GENERATOR_VARS = [
-    (3, (3,8)),
-    (4, (3,5)),
-    (4, (3,5)),
-    (6, (2,12)),
-    (4, (3,5)),
-    (4, (3,5)),
-    (4, (3,5)),
-    (0, None), # Pavement
-    (4, (3,5)),
-    (4, (3,5)),
-    (4, (3,5)),
-    (4, (3,5)),
+    (3, (3,8), 5),
+    (4, (3,5), 1), # s
+    (4, (3,5), 1),
+    (6, (2,12), 1), # s
+    (4, (3,5), 1),
+    (4, (3,5), 1),
+    (4, (3,5), 1),
+    (0, None, None), # Pavement
+    (2, (3,5), 5),
+    (4, (3,5), 1),
+    (4, (3,5), 1),
+    (4, (3,5), 1),
   ]
 
+  EGG_POSITIONS = [ (x, 32) for x in range(32, SCREEN_WIDTH-32)[::32*6] ]
+
+  def create(self):
+    self.eggs = []
+    for egg_pos in self.EGG_POSITIONS:
+      self.eggs.append(self.create_object(Egg, self, egg_pos))
+
+    self.cars = []
+
   def reset(self, event):
-    self.purge_objects()
+    for car in list(self.cars): # list() to make a copy
+      self.cars.remove(car)
+      self.destroy_object(car)
+
     for i, lane in enumerate(self.CAR_GENERATOR_VARS):
-      next_delay = 0
       total_delay = 0
       for j in range(lane[0]):
-        self.create_object(Car, self,
+        total_delay += random.randrange(*lane[1])
+        car = self.create_object(Car, self,
           lane=i,
-          delay=total_delay + next_delay,
-          speed_multiplier=event.level,
+          delay=total_delay,
+          level=event.level,
+          speed_multiplier=lane[2],
         )
-        next_delay = random.randrange(*lane[1])
-        total_delay += next_delay
+        self.cars.append(car)
 
   EVENT_BINDINGS = {
     E_SOFT_RESET: reset

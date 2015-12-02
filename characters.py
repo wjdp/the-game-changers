@@ -12,12 +12,14 @@ class Character(MovableObject):
     # Run the Character's create method
     self.create(*args, **kwargs)
 
-  def create(self):
+  def create(self, pos):
     """Should return a position, if not will default to Object's default"""
-    pass
+    self.pos = pos
 
 class Frog(Character):
   IMAGE = "chicken.png"
+  PLACEHOLDER_COLOUR = RED
+
   def create(self):
     self.move_to_start()
 
@@ -25,23 +27,25 @@ class Frog(Character):
     """Move the frog to the starting position"""
     self.pos = (SCREEN_WIDTH / 2, SCREEN_HEIGHT - 64)
 
+class Egg(Character):
+  PLACEHOLDER_COLOUR = GREEN
 
 class Car(Character):
   SPEED = 0.04
   SPEED_INCREMENT = 0.01
   LANE_HEIGHT = 32
-  LANE_ORIGIN = SCREEN_WIDTH / 2
+  LANE_ORIGIN = SCREEN_HEIGHT - (32 * 3)
   CAR_WIDTH = 32
   CAR_SPACING = 64
 
-  def create(self, lane, delay, speed_multiplier):
+  def create(self, lane, delay, level, speed_multiplier):
     self.lane = lane
 
     py = self.LANE_ORIGIN - (self.LANE_HEIGHT * lane)
     px = delay * self.CAR_SPACING
     self.pos = (px, py)
 
-    self.set_speed(speed_multiplier) # Set level 0 speed
+    self.set_speed((level + 1) * speed_multiplier)
 
   def set_speed(self, level):
     speed = self.SPEED + (self.SPEED_INCREMENT * level)

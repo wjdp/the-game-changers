@@ -3,9 +3,10 @@ import pygame
 from consts import *
 
 class Object(object):
-  def __init__(self, controller, pos=(0,0)):
+  PLACEHOLDER_COLOUR = YELLOW
+
+  def __init__(self, controller):
     self.controller = controller
-    self.pos = pos
 
   def get_image(self):
     if hasattr(self, 'image'):
@@ -18,7 +19,7 @@ class Object(object):
 
   def get_placeholder(self):
     placeholder_surface = pygame.Surface((32, 32))
-    placeholder_surface.fill(YELLOW)
+    placeholder_surface.fill(self.PLACEHOLDER_COLOUR)
     return placeholder_surface
 
   def draw(self):
