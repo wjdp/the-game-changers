@@ -42,8 +42,17 @@ class MenuController(Controller):
     self.engine.clear_background()
     self.engine.background_blit(bg, ORIGIN)
 
+    self.font1 = pygame.font.Font(FONT_ACTION_MAN, 64)
+
   def start_game(self):
     self.engine.setup_state('game')
+
+  def tick(self):
+    text1 = self.font1.render("Press ENTER To Start", True, YELLOW)
+    x1 = (SCREEN_WIDTH - text1.get_width()) / 2
+
+    if self.engine.get_ticks() % 1000 > 500:
+      self.engine.foreground_blit(text1, (x1, SCREEN_HEIGHT - 80))
 
   EVENT_BINDINGS = {
     K_RETURN: start_game
@@ -269,14 +278,23 @@ class ScoreTextController(Controller):
 
 class GameOverController(Controller):
   def create(self):
+    bg = pygame.image.load('images/end.png')
     self.engine.clear_background()
-    self.font = pygame.font.Font(FONT_ACTION_MAN, 64)
+    self.engine.background_blit(bg, ORIGIN)
+
+    self.font1 = pygame.font.Font(FONT_ACTION_MAN, 64)
+    self.font2 = pygame.font.Font(FONT_ACTION_MAN, 32)
 
     self.score = self.messages['score']
 
   def tick(self):
-    text = self.font.render("Your Score: {}".format(self.score), True, YELLOW)
-    self.engine.foreground_blit(text, (32, 32))
+    text1 = self.font1.render("Your Score: {}".format(self.score), True, YELLOW)
+    x1 = (SCREEN_WIDTH - text1.get_width()) / 2
+    text2 = self.font2.render("Press ENTER to try again".format(self.score), True, YELLOW)
+    x2 = (SCREEN_WIDTH - text2.get_width()) / 2
+
+    self.engine.foreground_blit(text1, (x1, 32))
+    self.engine.foreground_blit(text2, (x2, 96))
 
   def restart(self):
     self.engine.setup_state('game', purge=True)
