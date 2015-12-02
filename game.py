@@ -15,7 +15,7 @@ class BaseGameEngine(object):
 
 class GameEngine(BaseGameEngine, ObjectManagerMixin):
   """Generic 2D game engine"""
-  FRAMES_PER_SECOND = 30
+  FRAMES_PER_SECOND = 60
 
   active_controllers = []
 
