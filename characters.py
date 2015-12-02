@@ -33,7 +33,7 @@ class Egg(Character):
   PLACEHOLDER_COLOUR = GREEN
 
 class Car(Character):
-  SPEED = 0.04
+  SPEED = 0.01
   SPEED_INCREMENT = 0.01
   LANE_HEIGHT = 32
   LANE_ORIGIN = SCREEN_HEIGHT - (32 * 3)
