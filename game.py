@@ -2,7 +2,7 @@ import sys, pygame
 from pygame.locals import *
 
 pygame.mixer.init()
-sound = pygame.mixer.Sound("GameSoundtrack.wav")
+sound = pygame.mixer.Sound('sounds/GameSoundtrack.wav')
 sound.play()
 
 from consts import *
@@ -29,7 +29,7 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
       (SCREEN_WIDTH, SCREEN_HEIGHT)
     )
     self.screen.fill(WHITE)
-    pygame.display.set_caption('The Chicken Game')
+    pygame.display.set_caption(self.GAME_TITLE)
     pygame.display.flip()
 
     # Set up the clock
@@ -177,6 +177,8 @@ class FroggerGameEngine(GameEngine):
   """Frogger specific game engine"""
   SCREEN_WIDTH = SCREEN_WIDTH # i have added this into the consts file
   SCREEN_HEIGHT = SCREEN_HEIGHT # i have added this into the consts file
+
+  GAME_TITLE = 'The Chicken Game'
 
   STATES = {
     'menu': [
