@@ -28,10 +28,11 @@ class Frog(Character):
     self.pos = (SCREEN_WIDTH / 2, SCREEN_HEIGHT - 64)
 
 class Egg(Character):
+  IMAGE = EGG
   PLACEHOLDER_COLOUR = GREEN
 
 class Car(Character):
-  IMAGE = "bluelorry.png"
+  IMAGE = BLUELORRY
   SPEED = 0.04
   SPEED_INCREMENT = 0.01
   LANE_HEIGHT = 32
