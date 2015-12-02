@@ -5,8 +5,7 @@ from pygame.locals import *
 from consts import *
 from object_manager import ObjectManagerMixin
 from characters import *
-
-
+from objects import Egg
 
 class BaseController(object):
   pass
@@ -311,8 +310,11 @@ class ScoreTextController(Controller):
   lives = None
   score = None
 
+  EGG_ORIGIN = (SCREEN_WIDTH - (32 * LIVES), 0)
+
   def create(self):
-    self.font = pygame.font.Font(FONT_ACTION_MAN, 20, bold = True, italic = False)
+    self.font = pygame.font.Font(FONT_ACTION_MAN, 30, bold = True, italic = False)
+    self.eggs = []
 
   def update(self, event):
     self.lives = event.lives
@@ -321,10 +323,22 @@ class ScoreTextController(Controller):
   def update_score(self, event):
     self.score = event.score
 
+  def update_eggs(self):
+    self.purge_objects()
+    for i in range(self.lives):
+      egg = self.create_object(Egg, self,
+        pos=(self.EGG_ORIGIN[0] + (32 * i), self.EGG_ORIGIN[1]))
+      self.eggs.append(egg)
+
   def tick(self):
     if self.lives is not None:
-      text = self.font.render("Score: {} Lives: {}".format(self.score, self.lives), 1 , BLUE)
-      self.engine.foreground_blit(text, (600,0))
+      if len(self.eggs) != self.lives:
+        self.update_eggs()
+
+      text1 = self.font.render("Score: {}".format(self.score), 1 , YELLOW)
+      text2 = self.font.render("Lives", 1 , YELLOW)
+      self.engine.foreground_blit(text1, (2,4))
+      self.engine.foreground_blit(text2, (self.EGG_ORIGIN[0] - text2.get_width() - 12 ,4))
 
   EVENT_BINDINGS = {
     E_SOFT_RESET: update,
@@ -350,7 +364,8 @@ class GameOverController(Controller):
     x2 = (SCREEN_WIDTH - text2.get_width()) / 2
 
     self.engine.foreground_blit(text1, (x1, 32))
-    self.engine.foreground_blit(text2, (x2, 96))
+    if self.engine.get_ticks() % 1000 > 500:
+      self.engine.foreground_blit(text2, (x2, 96))
 
   def restart(self):
     self.engine.setup_state('game', purge=True)

@@ -40,8 +40,14 @@ class Object(object):
     else:
       return self.get_placeholder()
 
+  def get_width(self):
+    return 32
+
+  def get_height(self):
+    return 32
+
   def tick(self):
-    self.rect = pygame.Rect(self.pos, (32, 32))
+    self.rect = pygame.Rect(self.pos, (self.get_width(), self.get_height()))
 
   def destroy(self):
     pass
@@ -70,3 +76,6 @@ class CollisionDetectionObject(Object):
         if not self.rect.colliderect(obj.rect) == 0:
           return obj
     return False
+
+class Egg(Object):
+  IMAGE = EGG

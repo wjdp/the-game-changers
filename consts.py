@@ -35,6 +35,8 @@ CAR_WIDTH = 46
 CHICKEN = "chicken.png"
 
 HUT = "hut.png"
+EGG = "egg.png"
+
 INTRO = "intro.png"
 END = "end.png"
 

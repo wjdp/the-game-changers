@@ -64,6 +64,10 @@ class Car(Character):
       # Move to the left
       self.velocity = (-speed, 0)
 
+  def get_width(self):
+    # Override object get_width function
+    return self.width
+
   def tick_move(self):
     """Move the object based on velocity with wrapping"""
     if self.velocity[0] > 0 and self.pos[0] > SCREEN_WIDTH:
