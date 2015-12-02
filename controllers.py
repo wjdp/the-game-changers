@@ -159,25 +159,37 @@ class PlayerController(Controller):
 class LevelController(Controller):
   # Define the car generator variables
   # List of lanes, each element (num_of_cars, (delay_low, delay_high), speed_multiplier)
+  LORRY_LANE_1 = (6, (3,5), .5)
+  LORRY_LANE_2 = (6, (3,5), .6)
+
+  CAR_LANE_1 = (7, (2,4), 0.2)
+  CAR_LANE_2 = (6, (3,5), 0.7)
+  CAR_LANE_3 = (5, (4,6), 1)
+
+  FAST_CAR_LANE_1 = (3, (4,10), 5)
+  FAST_CAR_LANE_2 = (2, (6,15), 6)
+
+  PAVEMENT = (0, None, None)
+
   CAR_GENERATOR_VARS = [
-    (2, (6,16), 1), # Lane 1
-    (6, (3,5), 1),
-    (4, (3,5), 1),
-    (0, None, None), # Pavement
-    (6, (2,12), 1),
-    (4, (3,5), 1),
-    (2, (6,16), 4),
-    (4, (3,5), 1),
-    (4, (3,5), 1),
-    (0, None, None), # Pavement
-    (4, (3,5), 1),
-    (4, (3,5), 1),
-    (4, (3,5), 1),
-    (4, (3,5), 1),
-    (4, (3,5), 1),
-    (4, (3,5), 1),
-    (4, (3,5), 1),
-    (4, (3,5), 1),
+    CAR_LANE_3, # Lane 1
+    LORRY_LANE_1,
+    FAST_CAR_LANE_1,
+    PAVEMENT, # Pavement
+    LORRY_LANE_1,
+    CAR_LANE_3,
+    LORRY_LANE_2,
+    CAR_LANE_1,
+    LORRY_LANE_2,
+    PAVEMENT, # Pavement
+    CAR_LANE_2,
+    LORRY_LANE_1,
+    CAR_LANE_3,
+    CAR_LANE_1,
+    LORRY_LANE_1,
+    CAR_LANE_3,
+    FAST_CAR_LANE_2,
+    LORRY_LANE_2,
   ]
 
   EGG_POSITIONS = [ (x, 32) for x in range(32, SCREEN_WIDTH-32)[::32*6] ]
