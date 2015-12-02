@@ -16,17 +16,10 @@ class ObjectManagerMixin(object):
   def add_object(self, inst):
     """Given an object instance, append to object list"""
     self.objects.append(inst)
-    from characters import Frog
-    if isinstance(inst, Frog):
-      print "Frog added"
 
   def destroy_object(self, obj):
     """Removes object from current state"""
     obj.destroy()
-
-    from characters import Frog
-    if isinstance(obj, Frog):
-      print "Frog removed"
 
     if hasattr(self, 'object_super'):
       self.object_super.remove_object(obj)
