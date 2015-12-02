@@ -32,6 +32,10 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
     pygame.display.set_caption(self.GAME_TITLE)
     pygame.display.flip()
 
+    # Set the application icon
+    self.icon = pygame.image.load('images/{}'.format(self.ICON)).convert_alpha()
+    pygame.display.set_icon(self.icon)
+
     # Set up the surfaces
     self.background_surface = self.get_screen_sized_surface()
     self.foreground_surface = self.get_screen_sized_surface()
@@ -183,7 +187,9 @@ class FroggerGameEngine(GameEngine):
   SCREEN_WIDTH = SCREEN_WIDTH # i have added this into the consts file
   SCREEN_HEIGHT = SCREEN_HEIGHT # i have added this into the consts file
 
-  GAME_TITLE = 'The Chicken Game'
+  GAME_TITLE = 'Why Did The Chicken Cross The Road?'
+
+  ICON = CHICKEN
 
   STATES = {
     'menu': [
