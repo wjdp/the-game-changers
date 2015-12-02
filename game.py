@@ -1,9 +1,6 @@
 import sys, pygame
 from pygame.locals import *
 
-pygame.mixer.init()
-sound = pygame.mixer.Sound("GameSoundtrack.wav")
-sound.play()
 
 from consts import *
 from object_manager import ObjectManagerMixin
@@ -29,8 +26,16 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
       (SCREEN_WIDTH, SCREEN_HEIGHT)
     )
     self.screen.fill(WHITE)
-    pygame.display.set_caption('The Chicken Game')
+    pygame.display.set_caption(self.GAME_TITLE)
     pygame.display.flip()
+
+    # Set the application icon
+    self.icon = pygame.image.load('images/{}'.format(self.ICON)).convert_alpha()
+    pygame.display.set_icon(self.icon)
+
+    # Set up the surfaces
+    self.background_surface = self.get_screen_sized_surface()
+    self.foreground_surface = self.get_screen_sized_surface()
 
     # Set up the clock
     self.clock = pygame.time.Clock()
@@ -49,19 +54,21 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
     """Return the framerate, computed from last 10 clocks"""
     return int(self.clock.get_fps())
 
-  def get_screen_sized_surface(self):
-    return pygame.Surface((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
-
-  def create_controller(self, controller):
-    new_controller = controller(self)
+  def create_controller(self, controller, messages):
+    """Create a controller and append to the active_controllers list"""
+    # Pass a reference to self, the engine, and any messages for this state change
+    new_controller = controller(self, messages)
     self.active_controllers.append(new_controller)
 
   def destroy_controller(self, controller):
     controller.destroy()
     self.active_controllers.remove(controller)
 
-  def setup_state(self, state, purge=False):
+  def setup_state(self, state, purge=False, messages={}):
     """Remove old controllers, start a new state's controllers"""
+    # Add the requested state into the messages dict
+    messages["state"] = state
+
     # Make a copy of active controller. This needs doing as looping over a list
     # while removing items from that list causes the for loop to mis-index.
     # Bug #17
@@ -76,7 +83,7 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
     # Add controllers not already running
     active_controller_classes = [c.__class__ for c in self.active_controllers]
     for controller in set(new_controllers) - set(active_controller_classes):
-      self.create_controller(controller)
+      self.create_controller(controller, messages)
 
   def purge_controllers(self):
     """Destroy all controllers"""
@@ -90,6 +97,7 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
       #  quitting at the end of the current tick
 
       if event.key == K_ESCAPE: self.keep_alive = False
+      if event.key == K_F12: pygame.display.toggle_fullscreen()
 
       # Debug commands
       if event.key == K_o: print self.objects # Print all active objects
@@ -97,7 +105,6 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
 
       if event.key == K_n: self.post_event(E_WIN) # Debug make win state
       if event.key == K_m: self.post_event(E_DIE) # Debug make win state
-
 
       # Run event bindings in all the active controllers
       for controller in self.active_controllers:
@@ -121,15 +128,14 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
     ev = pygame.event.Event(pygame.USEREVENT, game_event = event, **kwargs)
     pygame.event.post(ev)
 
-  def clear_foreground(self):
-    self.foreground_surface = self.get_screen_sized_surface()
+  def get_screen_sized_surface(self):
+    return pygame.Surface((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.SRCALPHA).convert_alpha()
 
-    # Set and fill with the colorkey (the colour that means transparent)
-    self.foreground_surface.set_colorkey(COLORKEY)
-    self.foreground_surface.fill(COLORKEY)
+  def clear_foreground(self):
+    self.foreground_surface.fill(pygame.SRCALPHA)
 
   def clear_background(self):
-    self.background_surface = self.get_screen_sized_surface()
+    self.background_surface.fill(BLACK)
 
   def foreground_blit(self, surface, coord):
     self.foreground_surface.blit(surface, coord)
@@ -178,6 +184,10 @@ class FroggerGameEngine(GameEngine):
   SCREEN_WIDTH = SCREEN_WIDTH # i have added this into the consts file
   SCREEN_HEIGHT = SCREEN_HEIGHT # i have added this into the consts file
 
+  GAME_TITLE = 'Why Did The Chicken Cross The Road?'
+
+  ICON = CHICKEN
+
   STATES = {
     'menu': [
       controllers.MenuController,
@@ -189,6 +199,7 @@ class FroggerGameEngine(GameEngine):
       controllers.LevelController,
       controllers.ScoreTextController,
       controllers.FPSCounterController,
+	    controllers.SoundController,
     ],
     'gameover': [
       controllers.GameController,

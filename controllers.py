@@ -6,19 +6,24 @@ from consts import *
 from object_manager import ObjectManagerMixin
 from characters import *
 
+
+
 class BaseController(object):
   pass
 
 class Controller(BaseController, ObjectManagerMixin):
   EVENT_BINDINGS = [] # Empty bindings
 
-  def __init__(self, engine):
+  def __init__(self, engine, messages):
     super(Controller, self).__init__()
 
     # Store a reference to the engine
     self.engine = engine
     # Set the engine as the ObjectManagerMixin parent
     self.object_super = engine
+
+    # Store any messages from the state change
+    self.messages = messages
 
     self.create() # Use create in sub-classes for any init stuff
 
@@ -39,21 +44,59 @@ class MenuController(Controller):
     self.engine.clear_background()
     self.engine.background_blit(bg, ORIGIN)
 
+    self.font1 = pygame.font.Font(FONT_ACTION_MAN, 64)
 
   def start_game(self):
     self.engine.setup_state('game')
+
+  def tick(self):
+    text1 = self.font1.render("Press ENTER To Start", True, YELLOW)
+    x1 = (SCREEN_WIDTH - text1.get_width()) / 2
+
+    if self.engine.get_ticks() % 1000 > 500:
+      self.engine.foreground_blit(text1, (x1, SCREEN_HEIGHT - 80))
 
   EVENT_BINDINGS = {
     K_RETURN: start_game
   }
 
+class SoundController(Controller):
+  BACKGROUND_VOLUME = 0.3
+
+  def create(self):
+    pygame.mixer.init()
+    self.sound = pygame.mixer.Sound('sounds/GameSoundtrack.wav')
+    self.sound.set_volume(self.BACKGROUND_VOLUME)
+    self.sound.play()
+
+    # Preload sounds
+    self.win = pygame.mixer.Sound('sounds/GameWin.wav')
+    self.die = pygame.mixer.Sound('sounds/GameDie.wav')
+
+
+  def win(self, event):
+    self.win.play()
+
+  def die(self, event):
+    self.die.play()
+
+  EVENT_BINDINGS = {
+    E_WIN: win,
+    E_DIE: die,
+  }
+
+
+
 class GameController(Controller):
-  level = 0
+  level = 1
   score = 0
   lives = LIVES
 
   def create(self):
+    bg = pygame.image.load('images/background.png')
     self.engine.clear_background()
+    self.engine.background_blit(bg, ORIGIN)
+
     self.reset()
 
   def reset(self):
@@ -80,7 +123,7 @@ class GameController(Controller):
     self.reset()
 
   def gameover(self):
-    self.engine.setup_state('gameover')
+    self.engine.setup_state('gameover', messages={'score': self.score})
 
   def player_moved(self, event):
     if event.progress:
@@ -98,39 +141,47 @@ class GameController(Controller):
 
 
 class PlayerController(Controller):
-  max_height = 0
-  current_height = 0
+  LEFT_BOUND = 0
+  RIGHT_BOUND = SCREEN_WIDTH - 32
+  TOP_BOUND = 32
+  BOTTOM_BOUND = SCREEN_HEIGHT - (32 * 2)
 
   def create(self):
     self.player_object = self.create_object(Frog, self)
+    self.max_height = 0
+    self.current_height = 0
 
   def move(self, rel_pos):
     cp = self.player_object.pos
     self.player_object.pos = (cp[0] + rel_pos[0], cp[1] + rel_pos[1])
 
   def move_left(self):
-    self.move((-32, 0))
-    self.engine.post_event(E_HOP, direction=LEFT, progress=False)
+    if not self.player_object.pos[0] <= self.LEFT_BOUND:
+      self.move((-32, 0))
+      self.engine.post_event(E_HOP, direction=LEFT, progress=False)
 
   def move_right(self):
-    self.move((32, 0))
-    self.engine.post_event(E_HOP, direction=RIGHT, progress=False)
+    if not self.player_object.pos[0] >= self.RIGHT_BOUND:
+      self.move((32, 0))
+      self.engine.post_event(E_HOP, direction=RIGHT, progress=False)
 
   def move_up(self):
-    self.move((0, -32))
+    if not self.player_object.pos[1] <= self.TOP_BOUND:
+      self.move((0, -32))
 
-    self.current_height += 1
-    progressed = self.max_height < self.current_height
+      self.current_height += 1
+      progressed = self.max_height < self.current_height
 
-    self.engine.post_event(E_HOP, direction=LEFT, progress=progressed)
+      self.engine.post_event(E_HOP, direction=LEFT, progress=progressed)
 
-    if progressed:
-      self.max_height = self.current_height
+      if progressed:
+        self.max_height = self.current_height
 
   def move_down(self):
-    self.current_height -= 1
-    self.move((0, 32))
-    self.engine.post_event(E_HOP, direction=DOWN, progress=False)
+    if not self.player_object.pos[1] >= self.BOTTOM_BOUND:
+      self.current_height -= 1
+      self.move((0, 32))
+      self.engine.post_event(E_HOP, direction=DOWN, progress=False)
 
   def reset(self, event):
     self.player_object.move_to_start
@@ -147,6 +198,7 @@ class PlayerController(Controller):
     KM_RIGHT:  move_right,
     KM_UP: move_up,
     KM_DOWN: move_down,
+
     KM_LEFT1: move_left,
     KM_RIGHT1:  move_right,
     KM_UP1: move_up,
@@ -157,56 +209,93 @@ class PlayerController(Controller):
 
 class LevelController(Controller):
   # Define the car generator variables
-  # List of lanes, each element (num_of_cars, (delay_low, delay_high))
+  # List of lanes, each element:
+  # (num_of_cars, (delay_low, delay_high), speed_multiplier, images, width)
+  LORRY_LANE_1 = (6, (3,5), .5, LORRIES, LORRY_WIDTH)
+  LORRY_LANE_2 = (6, (3,5), .6, LORRIES, LORRY_WIDTH)
+
+  TRUCK_LANE_1 = (7, (2,4), 0.2, TRUCKS, TRUCK_WIDTH)
+  TRUCK_LANE_2 = (6, (3,5), 0.7, TRUCKS, TRUCK_WIDTH)
+  TRUCK_LANE_3 = (5, (4,6), 1, TRUCKS, TRUCK_WIDTH)
+
+  CAR_LANE_1 = (4, (4,6), 5, CARS, CAR_WIDTH)
+  CAR_LANE_2 = (2, (6,15), 6, CARS, CAR_WIDTH)
+
+  PAVEMENT = (0, None, None)
+
   CAR_GENERATOR_VARS = [
-    (3, (3,8)),
-    (4, (3,5)),
-    (4, (3,5)),
-    (6, (2,12)),
-    (4, (3,5)),
-    (4, (3,5)),
-    (4, (3,5)),
-    (0, None), # Pavement
-    (4, (3,5)),
-    (4, (3,5)),
-    (4, (3,5)),
-    (4, (3,5)),
+    TRUCK_LANE_3, # Lane 1
+    LORRY_LANE_1,
+    CAR_LANE_1,
+    PAVEMENT, # Pavement
+    LORRY_LANE_1,
+    TRUCK_LANE_3,
+    CAR_LANE_2,
+    TRUCK_LANE_1,
+    LORRY_LANE_2,
+    PAVEMENT, # Pavement
+    TRUCK_LANE_2,
+    LORRY_LANE_1,
+    TRUCK_LANE_3,
+    TRUCK_LANE_1,
+    LORRY_LANE_1,
+    TRUCK_LANE_3,
+    CAR_LANE_2,
+    LORRY_LANE_2,
   ]
 
+  EGG_POSITIONS = [ (x, 32) for x in range(32, SCREEN_WIDTH-32)[::32*6] ]
+
+  def create(self):
+    self.eggs = []
+    for egg_pos in self.EGG_POSITIONS:
+      self.eggs.append(self.create_object(Egg, self, egg_pos))
+
+    self.cars = []
+
   def reset(self, event):
-    self.purge_objects()
+    for car in list(self.cars): # list() to make a copy
+      self.cars.remove(car)
+      self.destroy_object(car)
+
     for i, lane in enumerate(self.CAR_GENERATOR_VARS):
-      next_delay = 0
       total_delay = 0
       for j in range(lane[0]):
-        self.create_object(Car, self,
+        total_delay += random.randrange(*lane[1])
+        image_path = random.choice(lane[3])
+        car = self.create_object(Car, self,
           lane=i,
-          delay=total_delay + next_delay,
-          speed_multiplier=event.level,
+          delay=total_delay,
+          level=event.level,
+          speed_multiplier=lane[2],
+          image_path=image_path,
+          width=lane[4],
         )
-        next_delay = random.randrange(*lane[1])
-        total_delay += next_delay
+        self.cars.append(car)
 
   EVENT_BINDINGS = {
     E_SOFT_RESET: reset
   }
 
-class GameOverController(Controller):
-  def restart(self):
-    self.engine.setup_state('game', purge=True)
-
-  EVENT_BINDINGS = {
-    K_RETURN: restart
-  }
 
 class FPSCounterController(Controller):
 
   def create(self):
-    self.font = pygame.font.SysFont("Arial", 16)
+    self.font = pygame.font.Font(FONT_ACTION_MAN, 32)
+    self.show_fps = False
 
   def tick(self):
-    text = self.font.render(str(self.engine.get_fps()), True, YELLOW)
-    self.engine.foreground_blit(text, (0, 0))
+    # If fps active, blit to top left
+    if self.show_fps:
+      text = self.font.render(str(self.engine.get_fps()), True, RED)
+      self.engine.foreground_blit(text, (0, 0))
+
+  def toggle_fps(self):
+    self.show_fps = not self.show_fps
+
+  EVENT_BINDINGS = {
+    K_f: toggle_fps,
+  }
 
 
 class ScoreTextController(Controller):
@@ -214,7 +303,7 @@ class ScoreTextController(Controller):
   score = None
 
   def create(self):
-    self.font = pygame.font.SysFont("verdana", 20, bold = True, italic = False)
+    self.font = pygame.font.Font(FONT_ACTION_MAN, 20, bold = True, italic = False)
 
   def update(self, event):
     self.lives = event.lives
@@ -233,3 +322,30 @@ class ScoreTextController(Controller):
     E_SCORE_CHANGED: update_score,
   }
 
+
+class GameOverController(Controller):
+  def create(self):
+    bg = pygame.image.load('images/end.png')
+    self.engine.clear_background()
+    self.engine.background_blit(bg, ORIGIN)
+
+    self.font1 = pygame.font.Font(FONT_ACTION_MAN, 64)
+    self.font2 = pygame.font.Font(FONT_ACTION_MAN, 32)
+
+    self.score = self.messages['score']
+
+  def tick(self):
+    text1 = self.font1.render("Your Score: {}".format(self.score), True, YELLOW)
+    x1 = (SCREEN_WIDTH - text1.get_width()) / 2
+    text2 = self.font2.render("Press ENTER to try again".format(self.score), True, YELLOW)
+    x2 = (SCREEN_WIDTH - text2.get_width()) / 2
+
+    self.engine.foreground_blit(text1, (x1, 32))
+    self.engine.foreground_blit(text2, (x2, 96))
+
+  def restart(self):
+    self.engine.setup_state('game', purge=True)
+
+  EVENT_BINDINGS = {
+    K_RETURN: restart
+  }
