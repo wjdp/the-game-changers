@@ -28,7 +28,7 @@ class Controller(BaseController, ObjectManagerMixin):
 
 class MenuController(Controller):
   def create(self):
-    bg = pygame.image.load('images/menu.png')
+    bg = pygame.image.load('images/intro.png')
     self.engine.clear_background()
     self.engine.background_blit(bg, ORIGIN)
 

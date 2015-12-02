@@ -46,6 +46,6 @@ POINTS_WIN = 10 # Points for completing a level
 
 # Screen dimensions, we're using a 32x32 grid
 
-SCREEN_WIDTH = 26 * 32
-SCREEN_HEIGHT = 18 * 32
+SCREEN_WIDTH = 30 * 32
+SCREEN_HEIGHT = 22 * 32
 
