@@ -1,3 +1,4 @@
+import random
 import pygame
 from pygame.locals import *
 
@@ -12,7 +13,13 @@ class Controller(BaseController, ObjectManagerMixin):
   EVENT_BINDINGS = [] # Empty bindings
 
   def __init__(self, engine):
+    super(Controller, self).__init__()
+
+    # Store a reference to the engine
     self.engine = engine
+    # Set the engine as the ObjectManagerMixin parent
+    self.object_super = engine
+
     self.create() # Use create in sub-classes for any init stuff
 
   # Method stubs
@@ -141,33 +148,39 @@ class PlayerController(Controller):
 
 
 class LevelController(Controller):
-  def create(self):
-    self.cars = [
-      self.create_object(Car, self, lane=0, delay=0),
-      self.create_object(Car, self, lane=0, delay=3),
-      self.create_object(Car, self, lane=0, delay=6),
-      self.create_object(Car, self, lane=0, delay=8),
-      self.create_object(Car, self, lane=1, delay=2),
-      self.create_object(Car, self, lane=1, delay=4),
-      self.create_object(Car, self, lane=1, delay=7),
-      self.create_object(Car, self, lane=1, delay=9),
-      self.create_object(Car, self, lane=2, delay=0),
-      self.create_object(Car, self, lane=2, delay=4),
-      self.create_object(Car, self, lane=3, delay=6),
-      self.create_object(Car, self, lane=3, delay=2),
-      self.create_object(Car, self, lane=3, delay=6),
-      self.create_object(Car, self, lane=4, delay=0),
-      self.create_object(Car, self, lane=4, delay=3),
-      self.create_object(Car, self, lane=4, delay=6),
-      self.create_object(Car, self, lane=4, delay=8),
-    ]
+  # Define the car generator variables
+  # List of lanes, each element (num_of_cars, (delay_low, delay_high))
+  CAR_GENERATOR_VARS = [
+    (3, (3,8)),
+    (4, (3,5)),
+    (4, (3,5)),
+    (6, (2,12)),
+    (4, (3,5)),
+    (4, (3,5)),
+    (4, (3,5)),
+    (0, None), # Pavement
+    (4, (3,5)),
+    (4, (3,5)),
+    (4, (3,5)),
+    (4, (3,5)),
+  ]
 
-  def speed_up_cars(self, event):
-    for car in self.cars:
-      car.change_speed(event.level)
+  def reset(self, event):
+    self.purge_objects()
+    for i, lane in enumerate(self.CAR_GENERATOR_VARS):
+      next_delay = 0
+      total_delay = 0
+      for j in range(lane[0]):
+        self.create_object(Car, self,
+          lane=i,
+          delay=total_delay + next_delay,
+          speed_multiplier=event.level,
+        )
+        next_delay = random.randrange(*lane[1])
+        total_delay += next_delay
 
   EVENT_BINDINGS = {
-    E_SOFT_RESET: speed_up_cars
+    E_SOFT_RESET: reset
   }
 
 class GameOverController(Controller):

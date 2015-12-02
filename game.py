@@ -20,6 +20,8 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
   active_controllers = []
 
   def __init__(self):
+    super(GameEngine, self).__init__()
+
     pygame.init()
 
     # Set up the screen
@@ -52,8 +54,6 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
 
   def create_controller(self, controller):
     new_controller = controller(self)
-    # Set the game engine as the ObjectManager parent
-    new_controller.object_super = self
     self.active_controllers.append(new_controller)
 
   def destroy_controller(self, controller):
@@ -117,7 +117,7 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
       self.keep_alive = False
 
   def post_event(self, event, **kwargs):
-    """Post a controller event"""
+    """Post a game event"""
     ev = pygame.event.Event(pygame.USEREVENT, game_event = event, **kwargs)
     pygame.event.post(ev)
 

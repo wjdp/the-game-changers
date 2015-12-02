@@ -1,23 +1,41 @@
 class ObjectManagerMixin(object):
-  objects = []
+
+  def __init__(self):
+    self.objects = []
 
   def create_object(self, obj, *args, **kwargs):
     """Add an object to current state and returns the instance"""
     new_obj_instance = obj(*args, **kwargs)
-    self.objects.append(new_obj_instance)
+    self.add_object(new_obj_instance)
 
     if hasattr(self, 'object_super'):
-      self.object_super.append_object(new_obj_instance)
+      self.object_super.add_object(new_obj_instance)
 
     return new_obj_instance
 
   def add_object(self, inst):
     """Given an object instance, append to object list"""
-    self.objects.append(new_obj_instance)
+    self.objects.append(inst)
+    from characters import Frog
+    if isinstance(inst, Frog):
+      print "Frog added"
 
-  def delete_object(self, obj):
+  def destroy_object(self, obj):
     """Removes object from current state"""
     obj.destroy()
+
+    from characters import Frog
+    if isinstance(obj, Frog):
+      print "Frog removed"
+
+    if hasattr(self, 'object_super'):
+      self.object_super.remove_object(obj)
+
+    self.remove_object(obj)
+
+  def remove_object(self, obj):
+    """Actually do the removing"""
+    # print self.objects, obj
     self.objects.remove(obj)
 
   def purge_objects(self):
@@ -25,9 +43,10 @@ class ObjectManagerMixin(object):
     # Make a copy of objects. This needs doing as looping over a list
     # while removing items from that list causes the for loop to mis-index.
     objects_copy = list(self.objects)
-
+    # print objects_copy
     for obj in objects_copy:
-      self.delete_object(obj)
+      # print obj
+      self.destroy_object(obj)
 
   def tick_objects(self):
     """Run tick function on all objects"""

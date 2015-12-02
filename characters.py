@@ -33,16 +33,16 @@ class Car(Character):
   CAR_WIDTH = 32
   CAR_SPACING = 64
 
-  def create(self, lane, delay):
+  def create(self, lane, delay, speed_multiplier):
     self.lane = lane
 
     py = self.LANE_ORIGIN - (self.LANE_HEIGHT * lane)
     px = delay * self.CAR_SPACING
     self.pos = (px, py)
 
-    self.change_speed(0) # Set level 0 speed
+    self.set_speed(speed_multiplier) # Set level 0 speed
 
-  def change_speed(self, level):
+  def set_speed(self, level):
     speed = self.SPEED + (self.SPEED_INCREMENT * level)
 
     if self.lane % 2:
