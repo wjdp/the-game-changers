@@ -1,4 +1,4 @@
-from objects import MovableObject
+from objects import MovableObject, CollisionDetectionObject
 from consts import *
 
 
@@ -10,13 +10,14 @@ class Character(MovableObject):
     # Run the object init method
     super(Character, self).__init__(controller)
     # Run the Character's create method
+    prite.Sprite.__init__(self)
     self.create(*args, **kwargs)
 
   def create(self):
     """Should return a position, if not will default to Object's default"""
     pass
 
-class Frog(Character):
+class Frog(Character, CollisionDetectionObject):
   IMAGE = "chicken.png"
   def create(self):
     self.move_to_start()
@@ -31,13 +32,13 @@ class Car(Character):
   SPEED_INCREMENT = 0.01
   LANE_HEIGHT = 32
   LANE_ORIGIN = SCREEN_WIDTH / 2
-  CAR_WIDTH = 32
+  CAR_WIDTH = 17
   CAR_SPACING = 64
 
   def create(self, lane, delay, speed_multiplier):
     self.lane = lane
 
-    py = self.LANE_ORIGIN - (self.LANE_HEIGHT * lane)
+    py = self.LANE_ORIGIN - (self.LANE_HEIGHT * lane), 
     px = delay * self.CAR_SPACING
     self.pos = (px, py)
 

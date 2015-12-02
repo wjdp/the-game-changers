@@ -96,6 +96,7 @@ class GameController(Controller):
     E_HOP: player_moved,
   }
 
+
 class PlayerController(Controller):
   max_height = 0
   current_height = 0
@@ -132,7 +133,14 @@ class PlayerController(Controller):
     self.engine.post_event(E_HOP, direction=DOWN, progress=False)
 
   def reset(self, event):
-    self.player_object.move_to_start()
+    self.player_object.move_to_start
+
+  def tick(self):
+    super(PlayerController, self).tick()
+    if self.player_object.collision_check(self.engine.objects):
+      self.engine.post_event(E_DIE)
+      print "die"
+
 
   EVENT_BINDINGS = {
     KM_LEFT: move_left,
