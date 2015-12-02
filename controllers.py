@@ -244,11 +244,21 @@ class LevelController(Controller):
 class FPSCounterController(Controller):
 
   def create(self):
-    self.font = pygame.font.Font(FONT_ACTION_MAN, 16)
+    self.font = pygame.font.Font(FONT_ACTION_MAN, 32)
+    self.show_fps = False
 
   def tick(self):
-    text = self.font.render(str(self.engine.get_fps()), True, YELLOW)
-    self.engine.foreground_blit(text, (0, 0))
+    # If fps active, blit to top left
+    if self.show_fps:
+      text = self.font.render(str(self.engine.get_fps()), True, RED)
+      self.engine.foreground_blit(text, (0, 0))
+
+  def toggle_fps(self):
+    self.show_fps = not self.show_fps
+
+  EVENT_BINDINGS = {
+    K_f: toggle_fps,
+  }
 
 
 class ScoreTextController(Controller):
