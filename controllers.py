@@ -12,13 +12,16 @@ class BaseController(object):
 class Controller(BaseController, ObjectManagerMixin):
   EVENT_BINDINGS = [] # Empty bindings
 
-  def __init__(self, engine):
+  def __init__(self, engine, messages):
     super(Controller, self).__init__()
 
     # Store a reference to the engine
     self.engine = engine
     # Set the engine as the ObjectManagerMixin parent
     self.object_super = engine
+
+    # Store any messages from the state change
+    self.messages = messages
 
     self.create() # Use create in sub-classes for any init stuff
 
@@ -82,7 +85,7 @@ class GameController(Controller):
     self.reset()
 
   def gameover(self):
-    self.engine.setup_state('gameover')
+    self.engine.setup_state('gameover', messages={'score': self.score})
 
   def player_moved(self, event):
     if event.progress:
@@ -161,37 +164,37 @@ class PlayerController(Controller):
 class LevelController(Controller):
   # Define the car generator variables
   # List of lanes, each element:
-  # (num_of_cars, (delay_low, delay_high), speed_multiplier, images)
-  LORRY_LANE_1 = (6, (3,5), .5, LORRIES)
-  LORRY_LANE_2 = (6, (3,5), .6, LORRIES)
+  # (num_of_cars, (delay_low, delay_high), speed_multiplier, images, width)
+  LORRY_LANE_1 = (6, (3,5), .5, LORRIES, LORRY_WIDTH)
+  LORRY_LANE_2 = (6, (3,5), .6, LORRIES, LORRY_WIDTH)
 
-  CAR_LANE_1 = (7, (2,4), 0.2, TRUCKS)
-  CAR_LANE_2 = (6, (3,5), 0.7, TRUCKS)
-  CAR_LANE_3 = (5, (4,6), 1, TRUCKS)
+  TRUCK_LANE_1 = (7, (2,4), 0.2, TRUCKS, TRUCK_WIDTH)
+  TRUCK_LANE_2 = (6, (3,5), 0.7, TRUCKS, TRUCK_WIDTH)
+  TRUCK_LANE_3 = (5, (4,6), 1, TRUCKS, TRUCK_WIDTH)
 
-  FAST_CAR_LANE_1 = (3, (4,10), 5, CARS)
-  FAST_CAR_LANE_2 = (2, (6,15), 6, CARS)
+  CAR_LANE_1 = (4, (4,6), 5, CARS, CAR_WIDTH)
+  CAR_LANE_2 = (2, (6,15), 6, CARS, CAR_WIDTH)
 
   PAVEMENT = (0, None, None)
 
   CAR_GENERATOR_VARS = [
-    CAR_LANE_3, # Lane 1
+    TRUCK_LANE_3, # Lane 1
     LORRY_LANE_1,
-    FAST_CAR_LANE_1,
-    PAVEMENT, # Pavement
-    LORRY_LANE_1,
-    CAR_LANE_3,
-    LORRY_LANE_2,
     CAR_LANE_1,
-    LORRY_LANE_2,
     PAVEMENT, # Pavement
+    LORRY_LANE_1,
+    TRUCK_LANE_3,
     CAR_LANE_2,
+    TRUCK_LANE_1,
+    LORRY_LANE_2,
+    PAVEMENT, # Pavement
+    TRUCK_LANE_2,
     LORRY_LANE_1,
-    CAR_LANE_3,
-    CAR_LANE_1,
+    TRUCK_LANE_3,
+    TRUCK_LANE_1,
     LORRY_LANE_1,
-    CAR_LANE_3,
-    FAST_CAR_LANE_2,
+    TRUCK_LANE_3,
+    CAR_LANE_2,
     LORRY_LANE_2,
   ]
 
@@ -220,6 +223,7 @@ class LevelController(Controller):
           level=event.level,
           speed_multiplier=lane[2],
           image_path=image_path,
+          width=lane[4],
         )
         self.cars.append(car)
 
@@ -227,13 +231,6 @@ class LevelController(Controller):
     E_SOFT_RESET: reset
   }
 
-class GameOverController(Controller):
-  def restart(self):
-    self.engine.setup_state('game', purge=True)
-
-  EVENT_BINDINGS = {
-    K_RETURN: restart
-  }
 
 class FPSCounterController(Controller):
 
@@ -269,3 +266,22 @@ class ScoreTextController(Controller):
     E_SCORE_CHANGED: update_score,
   }
 
+
+class GameOverController(Controller):
+  def create(self):
+    self.engine.clear_background()
+    self.font = pygame.font.SysFont("Arial", 16)
+
+    self.score = self.messages['score']
+
+  def tick(self):
+    text = self.font.render("Your Score: {}".format(self.score), True, YELLOW)
+    self.engine.foreground_blit(text, (32, 32))
+    print text
+
+  def restart(self):
+    self.engine.setup_state('game', purge=True)
+
+  EVENT_BINDINGS = {
+    K_RETURN: restart
+  }

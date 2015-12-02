@@ -37,11 +37,11 @@ class Car(Character):
   SPEED_INCREMENT = 0.01
   LANE_HEIGHT = 32
   LANE_ORIGIN = SCREEN_HEIGHT - (32 * 3)
-  CAR_WIDTH = 32
   CAR_SPACING = 64
 
-  def create(self, lane, delay, level, speed_multiplier, image_path):
+  def create(self, lane, delay, level, speed_multiplier, image_path, width):
     self.lane = lane
+    self.width = width
 
     py = self.LANE_ORIGIN - (self.LANE_HEIGHT * lane)
     px = delay * self.CAR_SPACING
@@ -68,10 +68,10 @@ class Car(Character):
     """Move the object based on velocity with wrapping"""
     if self.velocity[0] > 0 and self.pos[0] > SCREEN_WIDTH:
       # Moving right, reposition to off the left of the screen
-      new_pos = (-self.CAR_WIDTH, self.pos[1])
-    elif self.velocity[0] < 0 and self.pos[0] < -self.CAR_WIDTH:
+      new_pos = (-self.width, self.pos[1])
+    elif self.velocity[0] < 0 and self.pos[0] < -self.width:
       # Moving left, reposition to off the right of the screen
-      new_pos = (SCREEN_WIDTH + self.CAR_WIDTH, self.pos[1])
+      new_pos = (SCREEN_WIDTH + self.width, self.pos[1])
     else:
       # Car not offscreen, move as normal
       new_pos = (

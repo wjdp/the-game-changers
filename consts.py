@@ -14,14 +14,19 @@ COLORKEY = (255, 0, 255)
 BLUELORRY = "bluelorry.png"
 GREENLORRY = "greenlorry.png"
 LORRIES = [BLUELORRY, GREENLORRY]
+LORRY_WIDTH = 60
 
 REDTRUCK = "redtruck.png"
-YELLOWTRUCK = "yellowtruck.png"
-TRUCKS = [REDTRUCK, YELLOWTRUCK]
+PURPLETRUCK = "purpletruck.png"
+TRUCKS = [REDTRUCK, PURPLETRUCK]
+TRUCK_WIDTH = 65
 
 ORANGECAR = "orangecar.png"
 PINKCAR = "pinkcar.png"
-CARS = [ORANGECAR, PINKCAR]
+REDCAR = "redcar.png"
+BLUECAR = "bluecar.png"
+CARS = [ORANGECAR, PINKCAR, REDCAR, BLUECAR]
+CAR_WIDTH = 46
 
 CHICKEN = "chicken.png"
 
@@ -44,11 +49,11 @@ KM_DOWN1 = K_s
 
 # Controller events
 
-E_WIN = 5001
-E_DIE = 5002
-E_SOFT_RESET = 5003
-E_HOP = 5004
-E_SCORE_CHANGED = 5005
+E_WIN = 1
+E_DIE = 2
+E_SOFT_RESET = 3
+E_HOP = 4
+E_SCORE_CHANGED = 5
 
 # Directions
 

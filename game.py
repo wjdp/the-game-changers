@@ -53,16 +53,21 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
     """Return the framerate, computed from last 10 clocks"""
     return int(self.clock.get_fps())
 
-  def create_controller(self, controller):
-    new_controller = controller(self)
+  def create_controller(self, controller, messages):
+    """Create a controller and append to the active_controllers list"""
+    # Pass a reference to self, the engine, and any messages for this state change
+    new_controller = controller(self, messages)
     self.active_controllers.append(new_controller)
 
   def destroy_controller(self, controller):
     controller.destroy()
     self.active_controllers.remove(controller)
 
-  def setup_state(self, state, purge=False):
+  def setup_state(self, state, purge=False, messages={}):
     """Remove old controllers, start a new state's controllers"""
+    # Add the requested state into the messages dict
+    messages["state"] = state
+
     # Make a copy of active controller. This needs doing as looping over a list
     # while removing items from that list causes the for loop to mis-index.
     # Bug #17
@@ -77,7 +82,7 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
     # Add controllers not already running
     active_controller_classes = [c.__class__ for c in self.active_controllers]
     for controller in set(new_controllers) - set(active_controller_classes):
-      self.create_controller(controller)
+      self.create_controller(controller, messages)
 
   def purge_controllers(self):
     """Destroy all controllers"""
