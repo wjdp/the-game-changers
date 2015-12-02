@@ -28,8 +28,8 @@ class Frog(Character, CollisionDetectionObject):
     """Move the frog to the starting position"""
     self.pos = (SCREEN_WIDTH / 2, SCREEN_HEIGHT - 64)
 
-class Egg(Character):
-  IMAGE = EGG
+class Hut(Character):
+  IMAGE = HUT
   PLACEHOLDER_COLOUR = GREEN
 
 class Car(Character):

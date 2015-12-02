@@ -196,7 +196,7 @@ class PlayerController(Controller):
         # Collided with Car, so die
         self.active = False
         self.engine.post_event(E_DIE)
-      elif isinstance(collision_object, Egg):
+      elif isinstance(collision_object, Hut):
         self.active = False
         self.engine.post_event(E_WIN)
 
@@ -251,12 +251,12 @@ class LevelController(Controller):
     LORRY_LANE_2,
   ]
 
-  EGG_POSITIONS = [ (x, 32) for x in range(32, SCREEN_WIDTH-32)[::32*6] ]
+  HUT_POSITIONS = [ (x, 32) for x in range(32, SCREEN_WIDTH-32)[::32*6] ]
 
   def create(self):
-    self.eggs = []
-    for egg_pos in self.EGG_POSITIONS:
-      self.eggs.append(self.create_object(Egg, self, egg_pos))
+    self.huts = []
+    for hut_pos in self.HUT_POSITIONS:
+      self.huts.append(self.create_object(Hut, self, hut_pos))
 
     self.cars = []
 
