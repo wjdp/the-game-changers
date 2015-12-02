@@ -10,7 +10,6 @@ class Character(MovableObject):
     # Run the object init method
     super(Character, self).__init__(controller)
     # Run the Character's create method
-    prite.Sprite.__init__(self)
     self.create(*args, **kwargs)
 
   def create(self):
@@ -38,7 +37,7 @@ class Car(Character):
   def create(self, lane, delay, speed_multiplier):
     self.lane = lane
 
-    py = self.LANE_ORIGIN - (self.LANE_HEIGHT * lane), 
+    py = self.LANE_ORIGIN - (self.LANE_HEIGHT * lane)
     px = delay * self.CAR_SPACING
     self.pos = (px, py)
 

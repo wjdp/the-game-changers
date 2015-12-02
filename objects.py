@@ -55,44 +55,20 @@ class MovableObject(Object):
 
 class CollisionDetectionObject(Object):
 
-  #x = self.pos[0]
-  #y = self.pos[1]
-
-  def collide(self, rect):
-    print "colliosion check1"
-    x = self.pos[0]
-    y = self.pos[1]
-    if(x > self.left) and (x < self.right) and (y > self.top) and (y < self.bottom):
-     return True
-  
-
   def collision_check(self, all_objects): 
     print "collision check 1 start"
     for obj in all_objects:
       print "collision check 2 continue" 
       if not obj is self:
         print "collision check 3 continue"
-        if self.rect.colliderect(obj.rect):
+        if not self.rect.colliderect(obj.rect):
           print "collision check 4 return True self: {} obj: {}" .format(type(self), type(obj))
-          return False
+          return True
         else:
           return False
           print "collision check 5 False {}"  .format(type(self.rect))
       else:
         print "collision check 6 else"
-  
-  #x = self.pos[0]
-  #y = self.pos[1]
-
-#for a, b in [(obj.pos, self.pos),(self.pos, obj.pos)]:
-
-#((self.collide(a.left, a.top, b)) or
-#(self.collide(a.left, a.bottom, b)) or
-#(self.collide(a.right, a.top, b)) or
-#(self.collide(a.right, a.bottom, b))):
-#return True"""
-
-
   
      
 
