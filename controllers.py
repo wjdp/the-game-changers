@@ -221,14 +221,14 @@ class LevelController(Controller):
   # List of lanes, each element:
   # (num_of_cars, (delay_low, delay_high), speed_multiplier, images, width)
   LORRY_LANE_1 = (6, (3,5), .5, LORRIES, LORRY_WIDTH)
-  LORRY_LANE_2 = (6, (3,5), .6, LORRIES, LORRY_WIDTH)
+  LORRY_LANE_2 = (5, (3,5), .6, LORRIES, LORRY_WIDTH) #max 6 distance on the road
 
-  TRUCK_LANE_1 = (7, (2,4), 0.2, TRUCKS, TRUCK_WIDTH)
+  TRUCK_LANE_1 = (5, (2,6), 0.2, TRUCKS, TRUCK_WIDTH)
   TRUCK_LANE_2 = (6, (3,5), 0.7, TRUCKS, TRUCK_WIDTH)
-  TRUCK_LANE_3 = (5, (4,6), 1, TRUCKS, TRUCK_WIDTH)
+  TRUCK_LANE_3 = (5, (4,6), 2, TRUCKS, TRUCK_WIDTH)
 
-  CAR_LANE_1 = (4, (4,6), 5, CARS, CAR_WIDTH)
-  CAR_LANE_2 = (2, (6,15), 6, CARS, CAR_WIDTH)
+  CAR_LANE_1 = (4, (4,6), 5, CARS, CAR_WIDTH) #max 7 distance on the road
+  CAR_LANE_2 = (2, (6,10), 6, CARS, CAR_WIDTH)
 
   PAVEMENT = (0, None, None)
 

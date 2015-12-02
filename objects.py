@@ -69,5 +69,4 @@ class CollisionDetectionObject(Object):
       if not obj is self:
         if not self.rect.colliderect(obj.rect) == 0:
           return obj
-
     return False
