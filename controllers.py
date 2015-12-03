@@ -500,9 +500,16 @@ class GameOverController(Controller):
       text="Press ENTER to try again",
     )
 
-    self.menu_text = self.create_object(TextObject, self,
+    self.hs_text = self.create_object(TextObject, self,
       font_size=16,
       pos=(0, 140),
+      centre=True,
+      text="Press H to see the scoreboard",
+    )
+
+    self.menu_text = self.create_object(TextObject, self,
+      font_size=16,
+      pos=(0, 160),
       centre=True,
       text="Press SPACE to return to menu",
     )
@@ -521,9 +528,14 @@ class GameOverController(Controller):
     """Go to the menu"""
     self.engine.setup_state('menu')
 
+  def go_high_score(self):
+    """Go to score board"""
+    self.engine.setup_state('highscores')  
+
   EVENT_BINDINGS = {
     K_RETURN: restart,
     K_SPACE: go_menu,
+    K_h: go_high_score,
     E_SCORE_SAVED: show_text,
   }
 
@@ -538,45 +550,36 @@ class ScoreBoardController(Controller):
       high_score_reader = csv.reader(f)
       for line in high_score_reader:
         name_score.append(line)
-    print name_score
-        
-    name_score.sort(key = lambda i: i[1])
+            
+    name_score.sort(key = lambda i: -int(i[1]))
 
-    for j, x in enumerate(name_score[:10]):
+    for j, x in enumerate(name_score[:8]):
       #py = (72+(24+4))
-      board_name = (300,(24+(24+4))*j)
-      board_score = (600, (24+(24+4))*j)
+      board_name = (400,(120+(24+4)*j))
+      board_score = (700, (120+(24+4)*j))
 
       self.create_object(TextObject, self,
-        font_size=28,
+        font_size=16,
+        colour=BLACK,
         #pos=(0, 32),
         pos=board_name,
         text="{}".format(x[0])
         )
 
       self.create_object(TextObject, self,
-        font_size=28,
+        font_size=16,
+        colour=BLACK,
         #pos=(0, 32),
         pos=board_score,
         text="{}".format(x[1])
         )
 
     self.create_object(TextObject, self,
-      font_size=16,
-      pos=(0, 140),
-      centre=True,
-      text="HIGH SCORE",
-    )
-
-    self.menu_text = self.create_object(TextObject, self,
-      font_size=16,
-      pos=(0, 140),
+      font_size=58,
+      pos=(0, SCREEN_HEIGHT - 80),
       centre=True,
       text="Press SPACE to return to menu",
-    )
-
-  def tick(self):
-    pass
+      )
 
   def go_menu(self):
     self.engine.setup_state('menu')
