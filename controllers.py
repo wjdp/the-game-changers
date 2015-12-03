@@ -342,13 +342,18 @@ class SoundController(Controller):
   """Plays sounds for the game state, plays reactionary sounds on events"""
 
   BACKGROUND_VOLUME = 0.3
-
+  ROAD_VOLUME = 0.1
+  
   def create(self):
     pygame.mixer.init()
     self.sound = pygame.mixer.Sound('sounds/GameSoundtrack.wav')
     self.sound.set_volume(self.BACKGROUND_VOLUME)
     self.sound.play()
-
+    
+    self.road = pygame.mixer.Sound('sounds/GameTraffic.wav')
+    self.road.set_volume(self.ROAD_VOLUME)
+    self.road.play()
+	
     # Preload sounds
     self.win = pygame.mixer.Sound('sounds/GameWin.wav')
     self.die = pygame.mixer.Sound('sounds/GameDie.wav')
