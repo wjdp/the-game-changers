@@ -47,19 +47,29 @@ class MenuController(Controller):
     self.engine.background_blit(bg, ORIGIN)
 
     self.font1 = pygame.font.Font(FONT_ACTION_MAN, 64)
+    self.font2 = pygame.font.Font(FONT_ACTION_MAN, 16)
 
   def start_game(self):
     self.engine.setup_state('game')
+
+  def show_highscores(self):
+    self.engine.setup_state('highscores')
 
   def tick(self):
     text1 = self.font1.render("Press ENTER To Start", True, YELLOW)
     x1 = (SCREEN_WIDTH - text1.get_width()) / 2
 
+    text2 = self.font2.render("Press H To See Highscores", True, YELLOW)
+    x2 = (SCREEN_WIDTH - text2.get_width()) / 2
+
     if self.engine.get_ticks() % 1000 > 500:
       self.engine.foreground_blit(text1, (x1, SCREEN_HEIGHT - 80))
 
+    self.engine.foreground_blit(text2, (x2, SCREEN_HEIGHT - 20))
+
   EVENT_BINDINGS = {
-    K_RETURN: start_game
+    K_RETURN: start_game,
+    K_h: show_highscores,
   }
 
 
@@ -390,6 +400,7 @@ class GameOverController(Controller):
 
     self.font1 = pygame.font.Font(FONT_ACTION_MAN, 64)
     self.font2 = pygame.font.Font(FONT_ACTION_MAN, 32)
+    self.font3 = pygame.font.Font(FONT_ACTION_MAN, 16)
 
     self.score = self.messages['score']
 
@@ -398,14 +409,23 @@ class GameOverController(Controller):
     x1 = (SCREEN_WIDTH - text1.get_width()) / 2
     text2 = self.font2.render("Press ENTER to try again".format(self.score), True, YELLOW)
     x2 = (SCREEN_WIDTH - text2.get_width()) / 2
+    text3 = self.font3.render("Press SPACE to return to menu", True, YELLOW)
+    x3 = (SCREEN_WIDTH - text3.get_width()) / 2
 
     self.engine.foreground_blit(text1, (x1, 32))
+
     if self.engine.get_ticks() % 1000 > 500:
       self.engine.foreground_blit(text2, (x2, 96))
+
+    self.engine.foreground_blit(text3, (x3, 140))
 
   def restart(self):
     self.engine.setup_state('game', purge=True)
 
+  def go_menu(self):
+    self.engine.setup_state('menu')
+
   EVENT_BINDINGS = {
-    K_RETURN: restart
+    K_RETURN: restart,
+    K_SPACE: go_menu,
   }

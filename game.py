@@ -61,6 +61,8 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
     self.active_controllers.append(new_controller)
 
   def destroy_controller(self, controller):
+    """Remove a controller from the active state, calling that controller's
+    destroy method"""
     controller.destroy()
     self.active_controllers.remove(controller)
 
@@ -211,6 +213,10 @@ class FroggerGameEngine(GameEngine):
     'gameover': [
       controllers.GameController,
       controllers.GameOverController,
+      controllers.FPSCounterController,
+    ],
+    'highscores': [
+      controllers.FPSCounterController,
     ]
   }
 
