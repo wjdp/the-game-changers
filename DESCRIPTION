@@ -12,7 +12,7 @@ The game is infinite, however each level gets slightly harder! You get 5 lives.
 
 The game engine implemented is a generic 2D engine - GameEngine - which is subclassed as FroggerGameEngine. The engine handles setting up the display, the foreground and background surfaces, enforcing a frame-rate cap, the event queue, application keyboard events, drawing objects to the screen and manages the state of the game through controllers.
 
-Controllers implement various aspects of each state of the game. The game has three states 'menu', 'game' and 'gameover'. Each one of these states has a set of controllers that handle the background, player objects, level objects, score display, sound playback and so on.
+Controllers implement various aspects of each state of the game. The game has four states 'menu', 'game', 'gameover' and 'highscores'. Each one of these states has a set of controllers that handle the background, player objects, level objects, score display, sound playback and so on.
 
 When a state is switched controllers common to the old and new states are left alone while others are created and destroyed.
 
@@ -24,4 +24,6 @@ On each win state an event E_SOFT_RESET is fired. The LevelController resets the
 
 Collision detection is only run on the Chicken character.
 
-On game-over all objects are removed when the game switches it's state to the 'gameover'. A message with the final score is passed to controllers of the 'gameover' state to allow its display on-screen. Pressing enter on the game-over screen will put the game back into 'game' state to allow another level to play.
+On game-over all objects are removed when the game switches it's state to the 'gameover'. After collecting the player's name a message with the final score is passed to controllers of the 'gameover' state to allow its display on-screen. Pressing enter on the game-over screen will put the game back into 'game' state to allow another level to play. The player's score is saved to a CSV.
+
+The 'highscores' state shows the top 8 scored sorted by score.
