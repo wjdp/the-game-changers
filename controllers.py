@@ -352,6 +352,7 @@ class SoundController(Controller):
     # Preload sounds
     self.win = pygame.mixer.Sound('sounds/GameWin.wav')
     self.die = pygame.mixer.Sound('sounds/GameDie.wav')
+    self.jump = pygame.mixer.Sound('sounds/Jump.wav')
 
   def destroy(self):
    pygame.mixer.stop()
@@ -362,9 +363,13 @@ class SoundController(Controller):
   def die(self, event):
     self.die.play()
 
+  def jump(self, event):
+    self.jump.play()
+
   EVENT_BINDINGS = {
     E_WIN: win,
     E_DIE: die,
+    E_HOP: jump,
   }
 
 
