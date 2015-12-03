@@ -126,3 +126,6 @@ class DeadChickenPopup(PopupObject):
   """Death popup"""
   Z_INDEX = 100
   IMAGE = DEAD_CHICKEN
+
+
+

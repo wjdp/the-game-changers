@@ -1,3 +1,4 @@
+import csv
 import random
 import pygame
 from pygame.locals import *
@@ -231,14 +232,14 @@ class LevelController(Controller):
   # Define the car generator variables
   # List of lanes, each element:
   # (num_of_cars, (delay_low, delay_high), speed_multiplier, images, width)
-  LORRY_LANE_1 = (6, (3,5), .5, LORRIES, LORRY_WIDTH)
-  LORRY_LANE_2 = (5, (3,5), .6, LORRIES, LORRY_WIDTH) #max 6 distance on the road
+  LORRY_LANE_1 = (5, (4,5), .5, LORRIES, LORRY_WIDTH)
+  LORRY_LANE_2 = (6, (2,5), .6, LORRIES, LORRY_WIDTH) 
 
-  TRUCK_LANE_1 = (5, (2,6), 0.2, TRUCKS, TRUCK_WIDTH)
-  TRUCK_LANE_2 = (6, (3,5), 0.7, TRUCKS, TRUCK_WIDTH)
-  TRUCK_LANE_3 = (5, (4,6), 2, TRUCKS, TRUCK_WIDTH)
+  TRUCK_LANE_1 = (5, (4,5), 0.2, TRUCKS, TRUCK_WIDTH)
+  TRUCK_LANE_2 = (4, (2,3), 0.7, TRUCKS, TRUCK_WIDTH)
+  TRUCK_LANE_3 = (5, (3,4), 1, TRUCKS, TRUCK_WIDTH)
 
-  CAR_LANE_1 = (4, (4,6), 5, CARS, CAR_WIDTH) #max 7 distance on the road
+  CAR_LANE_1 = (4, (4,6), 5, CARS, CAR_WIDTH) 
   CAR_LANE_2 = (2, (6,10), 6, CARS, CAR_WIDTH)
 
   PAVEMENT = (0, None, None)
@@ -304,7 +305,7 @@ class FPSCounterController(Controller):
     self.fps_text = self.create_object(TextObject, self,
       text="0",
       pos=self.FPS_POS,
-      colour = RED,
+      colour = RED, 
     )
     self.fps_text.visible = False
 
@@ -451,12 +452,15 @@ class GameOverController(Controller):
   def create(self):
     self.engine.set_background_image(BG_GAME_OVER)
 
+<<<<<<< HEAD
 	#Gameover sound
     self.gameOver = pygame.mixer.Sound('sounds/GameOver.wav')
     self.gameOver.set_volume(self.GAMEOVER_VOLUME)
     self.gameOver.play()
 
     # Create the text objects
+=======
+>>>>>>> added high score stuff
     self.score_text = self.create_object(TextObject, self,
       font_size=64,
       pos=(0, 32),
@@ -494,3 +498,37 @@ class GameOverController(Controller):
     K_RETURN: restart,
     K_SPACE: go_menu,
   }
+
+class ScoreBoardController(Controller):
+  #High Score #
+
+  def create(self):
+    self.engine.set_background_image(BG_SCORE_BOARD)
+
+    with open("high_score.csv", 'rb') as csvfile:
+      high_score_reader = csv.reader(csvfile, delimiter= " ", quotechar = "|")
+      for row in high_score_reader:
+       highscores.append(row) 
+
+  def tick(self):
+    name = ("PLEASE ENTER YOUR NAME ")
+
+  def go_menu(self):
+    self.engine.setup_state('menu')
+ 
+    EVENT_BINDINGS = {
+      K_SPACE: go_menu
+    }
+
+    
+class HighScoreController(Controller):
+  
+  def create(self):
+    
+    name = "bob"
+
+    with open("high_score.csv", "a") as f:
+      writer = csv.writer(f)
+      writer.writerow((name, self.messages['score']))
+
+ 

@@ -1,3 +1,4 @@
+ 
 ORIGIN = (0, 0)
 
 BLACK = (0, 0, 0)
@@ -18,6 +19,7 @@ FONT_ACTION_MAN = "fonts/Action_Man_Bold.ttf"
 BG_MENU = "intro.png"
 BG_GAME = "background.png"
 BG_GAME_OVER = "end.png"
+BG_SCORE_BOARD = "scoreboard.png"
 
 # Images
 BLUELORRY = "bluelorry.png"
@@ -47,6 +49,7 @@ END = "end.png"
 
 DEAD_CHICKEN = "dead_chicken.png"
 
+
 # Keymap controls
 
 from pygame.locals import *
@@ -60,6 +63,7 @@ KM_RIGHT1 = K_d
 KM_UP1 = K_w
 KM_DOWN1 = K_s
 
+
 # Controller events
 
 E_WIN = 1
@@ -67,6 +71,7 @@ E_DIE = 2
 E_SOFT_RESET = 3
 E_HOP = 4
 E_SCORE_CHANGED = 5
+
 
 # Directions
 
@@ -87,4 +92,9 @@ GRID = 32
 
 SCREEN_WIDTH = 30 * GRID
 SCREEN_HEIGHT = 22 * GRID
+
+
+
+
+
 

@@ -227,8 +227,10 @@ class FroggerGameEngine(GameEngine):
       controllers.GameController,
       controllers.GameOverController,
       controllers.FPSCounterController,
+      controllers.HighScoreController,
     ],
     'highscores': [
+      controllers.ScoreBoardController,
       controllers.FPSCounterController,
     ]
   }
