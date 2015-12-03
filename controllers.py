@@ -50,11 +50,11 @@ class MenuController(Controller):
     self.engine.set_background_image(BG_MENU)
 
 	#play menu music
-	
+
     self.menu_music = pygame.mixer.Sound('sounds/GameMenu.wav')
     self.menu_music.set_volume(self.MENU_VOLUME)
     self.menu_music.play(-1)
-	
+
     self.start_text = self.create_object(TextObject, self,
       font_size=64,
       pos=(0, SCREEN_HEIGHT - 80),
@@ -70,9 +70,10 @@ class MenuController(Controller):
     )
 
   #Stopmusic
-  def destroy(create):
+  def destroy(self):
+    super(MenuController, self).destroy()
     pygame.mixer.stop()
-	
+
   def start_game(self):
     self.engine.setup_state('game')
 
@@ -449,8 +450,8 @@ class GameOverController(Controller):
   GAMEOVER_VOLUME = 0.3
   def create(self):
     self.engine.set_background_image(BG_GAME_OVER)
-	
-	#Gameover sound 
+
+	#Gameover sound
     self.gameOver = pygame.mixer.Sound('sounds/GameOver.wav')
     self.gameOver.set_volume(self.GAMEOVER_VOLUME)
     self.gameOver.play()
