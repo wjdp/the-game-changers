@@ -39,16 +39,3 @@ The submission should include the following (as one zip file)
 All group members have to show up the the scheduled demo and may be asked to explain part of the code during the demo.
 
 The final mark will be based on the group marked and a moderated peer assessment. That is you will have to assess each others contribution to the project and based on this the mark will be split.
-
-## Project Structure
-
-- **game.GameEngine** - Generic game engine, deals with game state
-  - Subclassed to **game.FroggerGameEngine**
-- **controllers.Controller** - Generic systems controller, created by GameEngine, creates and manages Objects
-  - **controllers.MenuController** - Deals with menu
-  - **controllers.PlayerController** - Deals with user interaction while playing
-  - **controllers.LevelController** - Deals with level generation and level runtime
-- **objects.Object** - Generic 2D object
-  - **objects.MovableObject** - 2D object that moves
-- **characters.Character** - A MovableObject with behaviour
-  - **characters.Frog** - The player's character
