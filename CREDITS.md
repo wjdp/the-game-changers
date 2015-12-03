@@ -16,3 +16,7 @@ Jumping.html
 - traffic - https://www.youtube.com/watch?v=GlCazmVBUMg
 - gameover - https://www.youtube.com/watch?v=X9uRCKtaOCU
 - gamemenu - https://www.youtube.com/watch?v=Vz3iABgpR_c
+
+##Images
+- dead chicken - www.crestock.com
+- running chicken - www.depositphotos.com
