@@ -48,6 +48,7 @@ INTRO = "intro.png"
 END = "end.png"
 
 DEAD_CHICKEN = "dead_chicken.png"
+ALIVE_CHICKEN = "alive_chicken.png"
 
 
 # Keymap controls
@@ -71,6 +72,8 @@ E_DIE = 2
 E_SOFT_RESET = 3
 E_HOP = 4
 E_SCORE_CHANGED = 5
+E_DISABLE_MOVEMENT = 6
+E_ENABLE_MOVEMENT = 7
 
 
 # Directions

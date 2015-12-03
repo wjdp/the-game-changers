@@ -121,10 +121,12 @@ class PopupObject(Object):
   """Base class for popups"""
   Z_INDEX = 100
 
+class AliveChickenPopup(PopupObject):
+  """Death popup"""
+  IMAGE = ALIVE_CHICKEN
 
 class DeadChickenPopup(PopupObject):
   """Death popup"""
-  Z_INDEX = 100
   IMAGE = DEAD_CHICKEN
 
 

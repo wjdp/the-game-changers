@@ -158,22 +158,27 @@ class PlayerController(Controller):
     self.player_object = self.create_object(Frog, self)
     self.max_height = 0
     self.current_height = 0
+    self.movement_enabled = True
+
+  def movement_allowed(self):
+    """Check for if we're allowed to move"""
+    return self.player_object.visible and self.movement_enabled
 
   def move_left(self):
     """Move to the left"""
-    if not self.player_object.pos[0] <= self.LEFT_BOUND and self.player_object.visible:
+    if not self.player_object.pos[0] <= self.LEFT_BOUND and self.movement_allowed():
       self.player_object.move((-1, 0))
       self.engine.post_event(E_HOP, direction=LEFT, progress=False)
 
   def move_right(self):
     """Move to the right"""
-    if not self.player_object.pos[0] >= self.RIGHT_BOUND and self.player_object.visible:
+    if not self.player_object.pos[0] >= self.RIGHT_BOUND and self.movement_allowed():
       self.player_object.move((1, 0))
       self.engine.post_event(E_HOP, direction=RIGHT, progress=False)
 
   def move_up(self):
     """Move up"""
-    if not self.player_object.pos[1] <= self.TOP_BOUND and self.player_object.visible:
+    if not self.player_object.pos[1] <= self.TOP_BOUND and self.movement_allowed():
       self.player_object.move((0, -1))
 
       self.current_height += 1
@@ -187,7 +192,7 @@ class PlayerController(Controller):
   def move_down(self):
     """Move down"""
     if not self.player_object.pos[1] >= self.BOTTOM_BOUND \
-       and self.player_object.visible:
+      and self.movement_allowed():
       self.current_height -= 1
       self.player_object.move((0, 1))
       self.engine.post_event(E_HOP, direction=DOWN, progress=False)
@@ -196,6 +201,12 @@ class PlayerController(Controller):
     """Reset the player to the starting position"""
     self.player_object.move_to_start()
     self.player_object.visible = True
+
+  def disable_movement(self, event):
+    self.movement_enabled = False
+
+  def enable_movement(self, event):
+    self.movement_enabled = True
 
   def tick(self):
     super(PlayerController, self).tick()
@@ -222,7 +233,11 @@ class PlayerController(Controller):
     KM_RIGHT1:  move_right,
     KM_UP1: move_up,
     KM_DOWN1: move_down,
+
     E_SOFT_RESET: reset,
+
+    E_DISABLE_MOVEMENT: disable_movement,
+    E_ENABLE_MOVEMENT: enable_movement,
   }
 
 
@@ -429,26 +444,37 @@ class PopupController(Controller):
     # Initialise instance variables
     self.hide_popup = 0
 
+  def show_popup(self, obj, duration=1000):
+    """Show a popup"""
+    popup = self.create_object(obj, self)
+    popup.set_pos_centre()
+    self.hide_popup = self.engine.get_ticks() + duration
+    self.engine.post_event(E_DISABLE_MOVEMENT)
+
+  def show_alive_popup(self, event):
+    """Show the death popup"""
+    self.show_popup(AliveChickenPopup)
+
   def show_death_popup(self, event):
     """Show the death popup"""
-    popup = self.create_object(DeadChickenPopup, self)
-    popup.set_pos_centre()
-    self.hide_popup = self.engine.get_ticks() + 1000
+    self.show_popup(DeadChickenPopup)
 
   def tick(self):
     super(PopupController, self).tick()
     """Remove popups after their time is done"""
     if len(self.objects) > 0 and self.engine.get_ticks() > self.hide_popup:
       self.purge_objects()
+      self.engine.post_event(E_ENABLE_MOVEMENT)
 
   EVENT_BINDINGS = {
+    E_WIN: show_alive_popup,
     E_DIE: show_death_popup,
   }
 
 
 class GameOverController(Controller):
   """Draws the gameover screen along with the player score"""
-  GAMEOVER_VOLUME = 0.3
+  GAMEOVER_VOLUME = 0.9
   def create(self):
     self.engine.set_background_image(BG_GAME_OVER)
 
