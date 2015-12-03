@@ -531,21 +531,58 @@ class ScoreBoardController(Controller):
   #High Score #
 
   def create(self):
-    self.engine.set_background_image(BG_SCORE_BOARD)
+    self.engine.set_background_image(BG_SCORE_BOARD)    
+    name_score = [] 
 
-    with open("high_score.csv", 'rb') as csvfile:
-      high_score_reader = csv.reader(csvfile, delimiter= " ", quotechar = "|")
-      for row in high_score_reader:
-       highscores.append(row)
+    with open("high_score.csv", 'rb') as f:
+      high_score_reader = csv.reader(f)
+      for line in high_score_reader:
+        name_score.append(line)
+    print name_score
+        
+    name_score.sort(key = lambda i: i[1])
+
+    for j, x in enumerate(name_score[:10]):
+      #py = (72+(24+4))
+      board_name = (300,(24+(24+4))*j)
+      board_score = (600, (24+(24+4))*j)
+
+      self.create_object(TextObject, self,
+        font_size=28,
+        #pos=(0, 32),
+        pos=board_name,
+        text="{}".format(x[0])
+        )
+
+      self.create_object(TextObject, self,
+        font_size=28,
+        #pos=(0, 32),
+        pos=board_score,
+        text="{}".format(x[1])
+        )
+
+    self.create_object(TextObject, self,
+      font_size=16,
+      pos=(0, 140),
+      centre=True,
+      text="HIGH SCORE",
+    )
+
+    self.menu_text = self.create_object(TextObject, self,
+      font_size=16,
+      pos=(0, 140),
+      centre=True,
+      text="Press SPACE to return to menu",
+    )
 
   def tick(self):
-    name = ("PLEASE ENTER YOUR NAME ")
+    pass
 
   def go_menu(self):
     self.engine.setup_state('menu')
 
-    EVENT_BINDINGS = {
-      K_SPACE: go_menu
+  EVENT_BINDINGS = {
+    K_SPACE: go_menu
     }
 
 
