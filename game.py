@@ -15,6 +15,7 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
   FRAMES_PER_SECOND = 60
 
   active_controllers = []
+  capture_text = False
 
   def __init__(self):
     super(GameEngine, self).__init__()
@@ -125,6 +126,14 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
       #  being asked to quit
       self.keep_alive = False
 
+  def text_capture(self):
+    for event in pygame.event.get():
+      if event.type == KEYDOWN:
+        for controller in self.active_controllers:
+          if E_TEXT_CAPTURE in controller.EVENT_BINDINGS:
+            # Argument needed here to satisfy the need for self within method
+            controller.EVENT_BINDINGS[E_TEXT_CAPTURE](controller, event)
+
   def post_event(self, event, **kwargs):
     """Post a game event"""
     ev = pygame.event.Event(pygame.USEREVENT, game_event = event, **kwargs)
@@ -164,7 +173,10 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
     self.last_tick = self.clock.tick(self.FRAMES_PER_SECOND)
 
     # Events
-    for event in pygame.event.get(): self.event_handle(event)
+    if self.capture_text:
+      self.text_capture()
+    else:
+      for event in pygame.event.get(): self.event_handle(event)
 
     # Clear the foreground
     self.clear_foreground()

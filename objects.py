@@ -62,12 +62,11 @@ class Object(object):
     else:
       return GRID
 
-  def set_pos_centre(self):
-    """Set the object's position to screen centre"""
-    self.pos = (
-      (SCREEN_WIDTH / 2) - (self.get_width() / 2),
-      (SCREEN_HEIGHT / 2) - (self.get_height() / 2),
-    )
+  def set_pos_centre(self, dims=(1,1)):
+    """Set the object's position to screen centre with switchable dimensions"""
+    px = (SCREEN_WIDTH / 2) - (self.get_width() / 2) if dims[0] else self.pos[0]
+    py = (SCREEN_HEIGHT / 2) - (self.get_height() / 2) if dims[1] else self.pos[1]
+    self.pos = (px, py)
 
   def tick(self):
     # Update the stored rect of object given its pos, width and height

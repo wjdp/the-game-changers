@@ -1,3 +1,4 @@
+import re
 import csv
 import random
 import pygame
@@ -483,6 +484,7 @@ class GameOverController(Controller):
     self.gameOver.set_volume(self.GAMEOVER_VOLUME)
     self.gameOver.play()
 
+  def show_text(self, event):
     # Create the text objects
     self.score_text = self.create_object(TextObject, self,
       font_size=64,
@@ -507,7 +509,9 @@ class GameOverController(Controller):
 
   def tick(self):
     super(GameOverController, self).tick()
-    self.restart_text.visible = self.engine.get_ticks() % 1000 > 500
+
+    if self.objects:
+      self.restart_text.visible = self.engine.get_ticks() % 1000 > 500
 
   def restart(self):
     """Restart the game"""
@@ -520,6 +524,7 @@ class GameOverController(Controller):
   EVENT_BINDINGS = {
     K_RETURN: restart,
     K_SPACE: go_menu,
+    E_SCORE_SAVED: show_text,
   }
 
 class ScoreBoardController(Controller):
@@ -545,13 +550,50 @@ class ScoreBoardController(Controller):
 
 
 class HighScoreController(Controller):
+  """Handles user input (their name) and saving their score to the scores file"""
 
   def create(self):
+    self.name = ""
+    self.engine.capture_text = True
 
-    name = "bob"
+    self.create_object(TextObject, self,
+      text="Enter your name:",
+      font_size=64,
+      pos=(0, 24),
+      centre=True,
+    )
 
+    self.name_text = self.create_object(TextObject, self,
+      font_size=48,
+      pos=(0, 24 + 64 + 6),
+      centre=True,
+      text="_"
+    )
+
+  def user_input(self, event):
+    """Handle user input"""
+    if re.match('^[\w-]+$', event.unicode):
+      # Input is letters, add to self.name
+      self.name += event.unicode
+      self.update_name_text()
+    elif event.key == K_RETURN:
+      # Input is enter, save and return to gameover state
+      self.save_score()
+      self.engine.capture_text = False # Enable engine event handling
+      self.engine.post_event(E_SCORE_SAVED)
+      self.purge_objects() # Get rid of our text
+
+  def update_name_text(self):
+    """Update the text objects with user input"""
+    self.name_text.set_text("{}_".format(self.name))
+    self.name_text.set_pos_centre((1,0))
+
+  def save_score(self):
+    """Save the score to CSV file"""
     with open("high_score.csv", "a") as f:
       writer = csv.writer(f)
-      writer.writerow((name, self.messages['score']))
+      writer.writerow((self.name, self.messages['score']))
 
-
+  EVENT_BINDINGS = {
+    E_TEXT_CAPTURE: user_input,
+  }

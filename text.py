@@ -18,10 +18,11 @@ class TextObject(Object):
     self.set_text(text)
 
     # Set position
+    self.pos = pos
+
+    # Centre horizontally if requested
     if centre:
-      self.pos = ((SCREEN_WIDTH - self.get_width()) / 2, pos[1])
-    else:
-      self.pos = pos
+      self.set_pos_centre((1,0))
 
   def set_text(self, text):
     """Create and store a surface with the text parameter"""
