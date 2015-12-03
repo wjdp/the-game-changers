@@ -43,9 +43,7 @@ class Controller(BaseController, ObjectManagerMixin):
 class MenuController(Controller):
   """Draws the main menu, changes the game state to start the game on user input"""
   def create(self):
-    bg = pygame.image.load('images/intro.png')
-    self.engine.clear_background()
-    self.engine.background_blit(bg, ORIGIN)
+    self.engine.set_background_image(BG_MENU)
 
     self.start_text = self.create_object(TextObject, self,
       font_size=64,
@@ -85,10 +83,7 @@ class GameController(Controller):
   lives = LIVES
 
   def create(self):
-    bg = pygame.image.load('images/background.png')
-    self.engine.clear_background()
-    self.engine.background_blit(bg, ORIGIN)
-
+    self.engine.set_background_image(BG_GAME)
     self.reset()
 
   def reset(self):
@@ -306,15 +301,17 @@ class ScoreTextController(Controller):
 
   EGG_ORIGIN = (SCREEN_WIDTH - (GRID * LIVES), 0)
 
+  SCORE_FONT_SIZE = 27
+
   def create(self):
     # Create text objects
     self.score_text = self.create_object(TextObject, self,
-      font_size=30,
-      pos=(2,4),
+      font_size=self.SCORE_FONT_SIZE,
+      pos=(2,6),
     )
     self.lives_text = self.create_object(TextObject, self,
-      font_size=30,
-      pos=(self.EGG_ORIGIN[0] - 62, 4),
+      font_size=self.SCORE_FONT_SIZE,
+      pos=(self.EGG_ORIGIN[0] - 76, 6),
       text="Lives",
     )
 
@@ -353,17 +350,17 @@ class SoundController(Controller):
 
   BACKGROUND_VOLUME = 0.3
   ROAD_VOLUME = 0.1
-  
+
   def create(self):
     pygame.mixer.init()
     self.sound = pygame.mixer.Sound('sounds/GameSoundtrack.wav')
     self.sound.set_volume(self.BACKGROUND_VOLUME)
     self.sound.play()
-    
+
     self.road = pygame.mixer.Sound('sounds/GameTraffic.wav')
     self.road.set_volume(self.ROAD_VOLUME)
     self.road.play()
-	
+
     # Preload sounds
     self.win = pygame.mixer.Sound('sounds/GameWin.wav')
     self.die = pygame.mixer.Sound('sounds/GameDie.wav')
@@ -412,9 +409,8 @@ class GameOverController(Controller):
   """Draws the gameover screen along with the player score"""
 
   def create(self):
-    bg = pygame.image.load('images/end.png')
-    self.engine.clear_background()
-    self.engine.background_blit(bg, ORIGIN)
+    self.engine.set_background_image(BG_GAME_OVER)
+
 
     self.score_text = self.create_object(TextObject, self,
       font_size=64,

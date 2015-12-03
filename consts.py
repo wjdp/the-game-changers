@@ -14,6 +14,11 @@ COLORKEY = (255, 0, 255)
 FONT_ACTION_MAN = "fonts/Action_Man.ttf"
 FONT_ACTION_MAN = "fonts/Action_Man_Bold.ttf"
 
+# Backgrounds
+BG_MENU = "intro.png"
+BG_GAME = "background.png"
+BG_GAME_OVER = "end.png"
+
 # Images
 BLUELORRY = "bluelorry.png"
 GREENLORRY = "greenlorry.png"

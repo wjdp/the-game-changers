@@ -139,6 +139,10 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
   def clear_background(self):
     self.background_surface.fill(BLACK)
 
+  def set_background_image(self, image_path):
+    bg_surf = pygame.image.load('images/{}'.format(image_path))
+    self.background_blit(bg_surf, ORIGIN)
+
   def foreground_blit(self, surface, coord):
     self.foreground_surface.blit(surface, coord)
 
