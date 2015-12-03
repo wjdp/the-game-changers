@@ -32,12 +32,15 @@ class Controller(BaseController, ObjectManagerMixin):
   # Method stubs
 
   def create(self):
+    """Called after __init__, to be overridden by children"""
     pass
 
   def tick(self):
+    """Called on each frame, to be extended by children"""
     self.tick_objects()
 
   def destroy(self):
+    """Called on destroy, to be extended by children"""
     self.purge_objects()
 
 class MenuController(Controller):
@@ -66,6 +69,7 @@ class MenuController(Controller):
     self.engine.setup_state('highscores')
 
   def tick(self):
+    super(MenuController, self).tick()
     self.start_text.visible = self.engine.get_ticks() % 1000 > 500
 
   EVENT_BINDINGS = {
@@ -137,21 +141,25 @@ class PlayerController(Controller):
   BOTTOM_BOUND = SCREEN_HEIGHT - (GRID * 2)
 
   def create(self):
+    """Initialise the player object and controller instance variables"""
     self.player_object = self.create_object(Frog, self)
     self.max_height = 0
     self.current_height = 0
 
   def move_left(self):
+    """Move to the left"""
     if not self.player_object.pos[0] <= self.LEFT_BOUND and self.player_object.visible:
       self.player_object.move((-1, 0))
       self.engine.post_event(E_HOP, direction=LEFT, progress=False)
 
   def move_right(self):
+    """Move to the right"""
     if not self.player_object.pos[0] >= self.RIGHT_BOUND and self.player_object.visible:
       self.player_object.move((1, 0))
       self.engine.post_event(E_HOP, direction=RIGHT, progress=False)
 
   def move_up(self):
+    """Move up"""
     if not self.player_object.pos[1] <= self.TOP_BOUND and self.player_object.visible:
       self.player_object.move((0, -1))
 
@@ -164,6 +172,7 @@ class PlayerController(Controller):
         self.max_height = self.current_height
 
   def move_down(self):
+    """Move down"""
     if not self.player_object.pos[1] >= self.BOTTOM_BOUND \
        and self.player_object.visible:
       self.current_height -= 1
@@ -171,11 +180,14 @@ class PlayerController(Controller):
       self.engine.post_event(E_HOP, direction=DOWN, progress=False)
 
   def reset(self, event):
+    """Reset the player to the starting position"""
     self.player_object.move_to_start()
     self.player_object.visible = True
 
   def tick(self):
     super(PlayerController, self).tick()
+
+    # Deal with collisions
     collision_object = self.player_object.collision_check()
     if collision_object and self.player_object.visible:
       if isinstance(collision_object, Car):
@@ -183,6 +195,7 @@ class PlayerController(Controller):
         self.player_object.visible = False
         self.engine.post_event(E_DIE)
       elif isinstance(collision_object, Hut):
+        # Collided with Hut, so win
         self.player_object.visible = False
         self.engine.post_event(E_WIN)
 
@@ -242,11 +255,13 @@ class LevelController(Controller):
   HUT_POSITIONS = [ (x, GRID) for x in range(GRID, SCREEN_WIDTH-GRID)[::GRID*6] ]
 
   def create(self):
+    """Create the huts at game start"""
     self.huts = []
     for hut_pos in self.HUT_POSITIONS:
       self.huts.append(self.create_object(Hut, self, hut_pos))
 
   def reset(self, event):
+    """Regenerate the level"""
     self.purge_objects(Car)
 
     for i, lane in enumerate(self.CAR_GENERATOR_VARS):
@@ -282,9 +297,11 @@ class FPSCounterController(Controller):
     self.fps_text.visible = False
 
   def tick(self):
+    super(FPSCounterController, self).tick()
     self.fps_text.set_text(self.engine.get_fps())
 
   def toggle_fps(self):
+    """Toggle display of the framerate counter"""
     self.fps_text.visible = not self.fps_text.visible
 
   EVENT_BINDINGS = {
@@ -335,6 +352,7 @@ class ScoreTextController(Controller):
       self.eggs.append(egg)
 
   def tick(self):
+    super(ScoreTextController, self).tick()
     # If we need to update the eggs (Lives) do so
     if self.lives is not None and len(self.eggs) != self.lives:
       self.update_eggs()
@@ -348,15 +366,16 @@ class ScoreTextController(Controller):
 class SoundController(Controller):
   """Plays sounds for the game state, plays reactionary sounds on events"""
 
-  BACKGROUND_VOLUME = 0.3
+  BACKGROUND_VOLUME = 0.4
   ROAD_VOLUME = 0.1
 
   def create(self):
-    pygame.mixer.init()
+    # Background music
     self.sound = pygame.mixer.Sound('sounds/GameSoundtrack.wav')
     self.sound.set_volume(self.BACKGROUND_VOLUME)
     self.sound.play()
 
+    # Background sound effect
     self.road = pygame.mixer.Sound('sounds/GameTraffic.wav')
     self.road.set_volume(self.ROAD_VOLUME)
     self.road.play()
@@ -367,15 +386,20 @@ class SoundController(Controller):
     self.jump = pygame.mixer.Sound('sounds/Jump.wav')
 
   def destroy(self):
+    """Stop all running sounds"""
+    super(SoundController, self).destroy()
     pygame.mixer.stop()
 
   def win(self, event):
+    """Play win sound"""
     self.win.play()
 
   def die(self, event):
+    """Play die sound"""
     self.die.play()
 
   def jump(self, event):
+    """Play jump sound"""
     self.jump.play()
 
   EVENT_BINDINGS = {
@@ -389,19 +413,23 @@ class PopupController(Controller):
   """Shows a popup on events (win, die)"""
 
   def create(self):
+    # Initialise instance variables
     self.hide_popup = 0
 
-  def show_popup(self, event):
+  def show_death_popup(self, event):
+    """Show the death popup"""
     popup = self.create_object(DeadChickenPopup, self)
     popup.set_pos_centre()
     self.hide_popup = self.engine.get_ticks() + 1000
 
   def tick(self):
+    super(PopupController, self).tick()
+    """Remove popups after their time is done"""
     if len(self.objects) > 0 and self.engine.get_ticks() > self.hide_popup:
       self.purge_objects()
 
   EVENT_BINDINGS = {
-    E_DIE: show_popup,
+    E_DIE: show_death_popup,
   }
 
 
@@ -411,6 +439,7 @@ class GameOverController(Controller):
   def create(self):
     self.engine.set_background_image(BG_GAME_OVER)
 
+    # Create the text objects
 
     self.score_text = self.create_object(TextObject, self,
       font_size=64,
@@ -434,12 +463,15 @@ class GameOverController(Controller):
     )
 
   def tick(self):
-    self.restart_text = self.engine.get_ticks() % 1000 > 500
+    super(GameOverController, self).tick()
+    self.restart_text.visible = self.engine.get_ticks() % 1000 > 500
 
   def restart(self):
+    """Restart the game"""
     self.engine.setup_state('game', purge=True)
 
   def go_menu(self):
+    """Go to the menu"""
     self.engine.setup_state('menu')
 
   EVENT_BINDINGS = {

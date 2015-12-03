@@ -24,16 +24,20 @@ class TextObject(Object):
       self.pos = pos
 
   def set_text(self, text):
+    """Create and store a surface with the text parameter"""
     # Create the text surface
     self.text_surface = self.font.render(unicode(text), True, self.colour)
     # Store the text as string for reference
     self.text = text
 
   def get_width(self):
+    """Get the width of the text surface"""
     return self.text_surface.get_width()
 
   def get_height(self):
+    """Get the height of the text surface"""
     return self.text_surface.get_height()
 
   def draw(self):
+    """Return the stored text surface"""
     return self.text_surface

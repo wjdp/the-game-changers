@@ -16,6 +16,7 @@ class Object(object):
     self.visible = True
 
   def get_image(self, image_path=None):
+    """Load in a image surface or return the cached one"""
     if hasattr(self, 'image'):
       # Image already loaded, return it
       return self.image
@@ -33,29 +34,43 @@ class Object(object):
     return self.image
 
   def get_placeholder(self):
+    """Generate a placeholder surface"""
     placeholder_surface = pygame.Surface(self.rect.size)
     placeholder_surface.fill(YELLOW)
     return placeholder_surface
 
   def draw(self):
+    """Return a surface to represent object"""
     if self.get_image():
+      # We have an image, return its surface
       return self.get_image()
     else:
+      # We don't have an image, return a placeholder surface
       return self.get_placeholder()
 
   def get_width(self):
-    return self.get_image().get_width()
+    """Return width of image"""
+    if self.get_image():
+      return self.get_image().get_width()
+    else:
+      return GRID
 
   def get_height(self):
-    return self.get_image().get_height()
+    """Return height of image"""
+    if self.get_image():
+      return self.get_image().get_height()
+    else:
+      return GRID
 
   def set_pos_centre(self):
+    """Set the object's position to screen centre"""
     self.pos = (
       (SCREEN_WIDTH / 2) - (self.get_width() / 2),
       (SCREEN_HEIGHT / 2) - (self.get_height() / 2),
     )
 
   def tick(self):
+    # Update the stored rect of object given its pos, width and height
     self.rect = pygame.Rect(self.pos, (self.get_width(), self.get_height()))
 
   def destroy(self):
@@ -80,7 +95,6 @@ class MovableObject(Object):
     self.pos = new_pos
 
 
-
 class CollisionDetectionMixin(Object):
   """Adds a collision check mechanism"""
 
@@ -90,20 +104,25 @@ class CollisionDetectionMixin(Object):
         return obj
     return False
 
+
 class Hut(Object):
   """Huts at top of screen the player reaches to win"""
   IMAGE = HUT
   PLACEHOLDER_COLOUR = GREEN
+
 
 class Egg(Object):
   """Eggs represent lives in the score bar"""
   Z_INDEX = 10
   IMAGE = EGG
 
+
 class PopupObject(Object):
   """Base class for popups"""
   Z_INDEX = 100
 
+
 class DeadChickenPopup(PopupObject):
+  """Death popup"""
   Z_INDEX = 100
   IMAGE = DEAD_CHICKEN
