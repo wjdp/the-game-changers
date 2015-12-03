@@ -6,6 +6,7 @@ from consts import *
 from object_manager import ObjectManagerMixin
 from characters import *
 from objects import *
+from text import TextObject
 
 class BaseController(object):
   pass
@@ -46,8 +47,19 @@ class MenuController(Controller):
     self.engine.clear_background()
     self.engine.background_blit(bg, ORIGIN)
 
-    self.font1 = pygame.font.Font(FONT_ACTION_MAN, 64)
-    self.font2 = pygame.font.Font(FONT_ACTION_MAN, 16)
+    self.start_text = self.create_object(TextObject, self,
+      font_size=64,
+      pos=(0, SCREEN_HEIGHT - 80),
+      centre=True,
+      text="Press ENTER to start",
+    )
+
+    self.highscore_text = self.create_object(TextObject, self,
+      font_size=16,
+      pos=(0, SCREEN_HEIGHT - 20),
+      centre=True,
+      text="Press H to view highscores",
+    )
 
   def start_game(self):
     self.engine.setup_state('game')
@@ -56,16 +68,7 @@ class MenuController(Controller):
     self.engine.setup_state('highscores')
 
   def tick(self):
-    text1 = self.font1.render("Press ENTER To Start", True, YELLOW)
-    x1 = (SCREEN_WIDTH - text1.get_width()) / 2
-
-    text2 = self.font2.render("Press H To See Highscores", True, YELLOW)
-    x2 = (SCREEN_WIDTH - text2.get_width()) / 2
-
-    if self.engine.get_ticks() % 1000 > 500:
-      self.engine.foreground_blit(text1, (x1, SCREEN_HEIGHT - 80))
-
-    self.engine.foreground_blit(text2, (x2, SCREEN_HEIGHT - 20))
+    self.start_text.visible = self.engine.get_ticks() % 1000 > 500
 
   EVENT_BINDINGS = {
     K_RETURN: start_game,
@@ -166,7 +169,8 @@ class PlayerController(Controller):
         self.max_height = self.current_height
 
   def move_down(self):
-    if not self.player_object.pos[1] >= self.BOTTOM_BOUND and self.player_object.visible:
+    if not self.player_object.pos[1] >= self.BOTTOM_BOUND \
+       and self.player_object.visible:
       self.current_height -= 1
       self.player_object.move((0, 1))
       self.engine.post_event(E_HOP, direction=DOWN, progress=False)
@@ -247,12 +251,8 @@ class LevelController(Controller):
     for hut_pos in self.HUT_POSITIONS:
       self.huts.append(self.create_object(Hut, self, hut_pos))
 
-    self.cars = []
-
   def reset(self, event):
-    for car in list(self.cars): # list() to make a copy
-      self.cars.remove(car)
-      self.destroy_object(car)
+    self.purge_objects(Car)
 
     for i, lane in enumerate(self.CAR_GENERATOR_VARS):
       total_delay = 0
@@ -267,7 +267,6 @@ class LevelController(Controller):
           image_path=image_path,
           width=lane[4],
         )
-        self.cars.append(car)
 
   EVENT_BINDINGS = {
     E_SOFT_RESET: reset
@@ -277,18 +276,21 @@ class LevelController(Controller):
 class FPSCounterController(Controller):
   """Optional controller to show the FPS at the top of the screen"""
 
+  FPS_POS = (300, 0)
+
   def create(self):
-    self.font = pygame.font.Font(FONT_ACTION_MAN, 32)
-    self.show_fps = False
+    self.fps_text = self.create_object(TextObject, self,
+      text="0",
+      pos=self.FPS_POS,
+      colour = RED,
+    )
+    self.fps_text.visible = False
 
   def tick(self):
-    # If fps active, blit to top left
-    if self.show_fps:
-      text = self.font.render(str(self.engine.get_fps()), True, RED)
-      self.engine.foreground_blit(text, (300, 0))
+    self.fps_text.set_text(self.engine.get_fps())
 
   def toggle_fps(self):
-    self.show_fps = not self.show_fps
+    self.fps_text.visible = not self.fps_text.visible
 
   EVENT_BINDINGS = {
     K_f: toggle_fps,
@@ -305,32 +307,40 @@ class ScoreTextController(Controller):
   EGG_ORIGIN = (SCREEN_WIDTH - (GRID * LIVES), 0)
 
   def create(self):
-    self.font = pygame.font.Font(FONT_ACTION_MAN, 30, bold = True, italic = False)
+    # Create text objects
+    self.score_text = self.create_object(TextObject, self,
+      font_size=30,
+      pos=(2,4),
+    )
+    self.lives_text = self.create_object(TextObject, self,
+      font_size=30,
+      pos=(self.EGG_ORIGIN[0] - 62, 4),
+      text="Lives",
+    )
+
     self.eggs = []
 
   def update(self, event):
     self.lives = event.lives
-    self.score = event.score
+    self.update_score(event)
 
   def update_score(self, event):
-    self.score = event.score
+    self.score_text.set_text("Score: {}".format(event.score))
 
   def update_eggs(self):
-    self.purge_objects()
+    # Remove all objects
+    self.purge_objects(Egg)
+
+    # Create objects (Eggs) to represent lives
     for i in range(self.lives):
       egg = self.create_object(Egg, self,
         pos=(self.EGG_ORIGIN[0] + (GRID * i), self.EGG_ORIGIN[1]))
       self.eggs.append(egg)
 
   def tick(self):
-    if self.lives is not None:
-      if len(self.eggs) != self.lives:
-        self.update_eggs()
-
-      text1 = self.font.render("Score: {}".format(self.score), 1 , YELLOW)
-      text2 = self.font.render("Lives", 1 , YELLOW)
-      self.engine.foreground_blit(text1, (2,4))
-      self.engine.foreground_blit(text2, (self.EGG_ORIGIN[0] - text2.get_width() - 12 ,4))
+    # If we need to update the eggs (Lives) do so
+    if self.lives is not None and len(self.eggs) != self.lives:
+      self.update_eggs()
 
   EVENT_BINDINGS = {
     E_SOFT_RESET: update,
@@ -360,7 +370,7 @@ class SoundController(Controller):
     self.jump = pygame.mixer.Sound('sounds/Jump.wav')
 
   def destroy(self):
-   pygame.mixer.stop()
+    pygame.mixer.stop()
 
   def win(self, event):
     self.win.play()
@@ -381,18 +391,16 @@ class SoundController(Controller):
 class PopupController(Controller):
   """Shows a popup on events (win, die)"""
 
-  popup = None
-
   def create(self):
     self.hide_popup = 0
 
   def show_popup(self, event):
-    self.popup = self.create_object(DeadChickenPopup, self)
-    self.popup.set_pos_centre()
+    popup = self.create_object(DeadChickenPopup, self)
+    popup.set_pos_centre()
     self.hide_popup = self.engine.get_ticks() + 1000
 
   def tick(self):
-    if self.popup is not None and self.engine.get_ticks() > self.hide_popup:
+    if len(self.objects) > 0 and self.engine.get_ticks() > self.hide_popup:
       self.purge_objects()
 
   EVENT_BINDINGS = {
@@ -408,26 +416,29 @@ class GameOverController(Controller):
     self.engine.clear_background()
     self.engine.background_blit(bg, ORIGIN)
 
-    self.font1 = pygame.font.Font(FONT_ACTION_MAN, 64)
-    self.font2 = pygame.font.Font(FONT_ACTION_MAN, 32)
-    self.font3 = pygame.font.Font(FONT_ACTION_MAN, 16)
+    self.score_text = self.create_object(TextObject, self,
+      font_size=64,
+      pos=(0, 32),
+      centre=True,
+      text="Your Score: {}".format(self.messages['score']),
+    )
 
-    self.score = self.messages['score']
+    self.restart_text = self.create_object(TextObject, self,
+      font_size=32,
+      pos=(0, 96),
+      centre=True,
+      text="Press ENTER to try again",
+    )
+
+    self.menu_text = self.create_object(TextObject, self,
+      font_size=16,
+      pos=(0, 140),
+      centre=True,
+      text="Press SPACE to return to menu",
+    )
 
   def tick(self):
-    text1 = self.font1.render("Your Score: {}".format(self.score), True, YELLOW)
-    x1 = (SCREEN_WIDTH - text1.get_width()) / 2
-    text2 = self.font2.render("Press ENTER to try again".format(self.score), True, YELLOW)
-    x2 = (SCREEN_WIDTH - text2.get_width()) / 2
-    text3 = self.font3.render("Press SPACE to return to menu", True, YELLOW)
-    x3 = (SCREEN_WIDTH - text3.get_width()) / 2
-
-    self.engine.foreground_blit(text1, (x1, 32))
-
-    if self.engine.get_ticks() % 1000 > 500:
-      self.engine.foreground_blit(text2, (x2, 96))
-
-    self.engine.foreground_blit(text3, (x3, 140))
+    self.restart_text = self.engine.get_ticks() % 1000 > 500
 
   def restart(self):
     self.engine.setup_state('game', purge=True)

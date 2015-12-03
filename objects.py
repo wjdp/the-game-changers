@@ -86,9 +86,8 @@ class CollisionDetectionMixin(Object):
 
   def collision_check(self):
     for obj in self.controller.engine.objects:
-      if not obj is self:
-        if not self.rect.colliderect(obj.rect) == 0:
-          return obj
+      if not (obj is self or self.rect.colliderect(obj.rect) == 0):
+        return obj
     return False
 
 class Hut(Object):

@@ -33,14 +33,19 @@ class ObjectManagerMixin(object):
     # print self.objects, obj
     self.objects.remove(obj)
 
-  def purge_objects(self):
-    """Deletes all objects"""
-    # Make a copy of objects. This needs doing as looping over a list
-    # while removing items from that list causes the for loop to mis-index.
-    objects_copy = list(self.objects)
-    # print objects_copy
-    for obj in objects_copy:
-      # print obj
+  def purge_objects(self, by_type=None):
+    """Deletes all objects, optionally only delete objects of a certain type"""
+    if by_type:
+      # If type specified, filter the object list by this type
+      objects_to_purge = filter(
+        lambda obj: isinstance(obj, by_type), self.objects
+      )
+    else:
+      # Make a copy of objects. This needs doing as looping over a list
+      # while removing items from that list causes the for loop to mis-index.
+      objects_to_purge = list(self.objects)
+
+    for obj in objects_to_purge:
       self.destroy_object(obj)
 
   def tick_objects(self):
