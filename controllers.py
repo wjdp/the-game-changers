@@ -540,7 +540,7 @@ class GameOverController(Controller):
   }
 
 class ScoreBoardController(Controller):
-  #High Score #
+  """High Score"""
 
   def create(self):
     self.engine.set_background_image(BG_SCORE_BOARD)
@@ -554,14 +554,12 @@ class ScoreBoardController(Controller):
     name_score.sort(key = lambda i: -int(i[1]))
 
     for j, x in enumerate(name_score[:8]):
-      #py = (72+(24+4))
-      board_name = (400,(120+(24+4)*j))
-      board_score = (700, (120+(24+4)*j))
+      board_name = (320,(120+(24+4)*j))
+      board_score = (600, (120+(24+4)*j))
 
       self.create_object(TextObject, self,
         font_size=16,
         colour=BLACK,
-        #pos=(0, 32),
         pos=board_name,
         text="{}".format(x[0])
         )
@@ -569,7 +567,6 @@ class ScoreBoardController(Controller):
       self.create_object(TextObject, self,
         font_size=16,
         colour=BLACK,
-        #pos=(0, 32),
         pos=board_score,
         text="{}".format(x[1])
         )
