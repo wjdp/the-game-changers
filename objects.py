@@ -4,13 +4,16 @@ from pygame.locals import *
 from consts import *
 
 class Object(object):
+  """Generic object, a thing with a position that's drawn to the screen"""
   PLACEHOLDER_COLOUR = YELLOW
   Z_INDEX = 0
 
   def __init__(self, controller, pos=(0,0)):
+    # Set instance variables
     self.controller = controller
     self.pos = pos
-    self.rect = pygame.Rect(pos, (32, 32))
+    self.rect = pygame.Rect(pos, (GRID, GRID))
+    self.visible = True
 
   def get_image(self, image_path=None):
     if hasattr(self, 'image'):
@@ -59,6 +62,9 @@ class Object(object):
     pass
 
 class MovableObject(Object):
+  """An object that moves, has a velocity which updates the position on each
+  tick"""
+
   velocity = (0, 0)
 
   def tick(self):
@@ -75,7 +81,9 @@ class MovableObject(Object):
 
 
 
-class CollisionDetectionObject(Object):
+class CollisionDetectionMixin(Object):
+  """Adds a collision check mechanism"""
+
   def collision_check(self):
     for obj in self.controller.engine.objects:
       if not obj is self:
@@ -83,10 +91,20 @@ class CollisionDetectionObject(Object):
           return obj
     return False
 
+class Hut(Object):
+  """Huts at top of screen the player reaches to win"""
+  IMAGE = HUT
+  PLACEHOLDER_COLOUR = GREEN
+
 class Egg(Object):
+  """Eggs represent lives in the score bar"""
   Z_INDEX = 10
   IMAGE = EGG
 
-class DeadChicken(Object):
+class PopupObject(Object):
+  """Base class for popups"""
+  Z_INDEX = 100
+
+class DeadChickenPopup(PopupObject):
   Z_INDEX = 100
   IMAGE = DEAD_CHICKEN

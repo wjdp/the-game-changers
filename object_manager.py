@@ -1,4 +1,6 @@
 class ObjectManagerMixin(object):
+  """Provides a mechanism for managing objects owned by the class. Passes
+  created and destroyed objects to a 'parent class' so it can keep track too"""
 
   def __init__(self):
     self.objects = []

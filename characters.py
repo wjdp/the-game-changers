@@ -1,6 +1,6 @@
 import pygame
 
-from objects import MovableObject, CollisionDetectionObject
+from objects import MovableObject, CollisionDetectionMixin
 from consts import *
 
 class Character(MovableObject):
@@ -17,7 +17,9 @@ class Character(MovableObject):
     """Should return a position, if not will default to Object's default"""
     self.pos = pos
 
-class Frog(Character, CollisionDetectionObject):
+class Frog(Character, CollisionDetectionMixin):
+  """The player object, is a chicken rather than a frog"""
+
   IMAGE = "chicken.png"
   PLACEHOLDER_COLOUR = RED
   Z_INDEX = 5
@@ -29,15 +31,16 @@ class Frog(Character, CollisionDetectionObject):
     """Move the frog to the starting position"""
     self.pos = (SCREEN_WIDTH / 2, SCREEN_HEIGHT - 64)
 
-class Hut(Character):
-  IMAGE = HUT
-  PLACEHOLDER_COLOUR = GREEN
+  def move(self, rel_pos):
+    self.pos = (self.pos[0] + rel_pos[0] * GRID, self.pos[1] + rel_pos[1] * GRID)
 
 class Car(Character):
+  """The 'car' object, it drives on roads and collides with the player"""
+
   SPEED = 0.01
   SPEED_INCREMENT = 0.01
-  LANE_HEIGHT = 32
-  LANE_ORIGIN = SCREEN_HEIGHT - (32 * 3)
+  LANE_HEIGHT = GRID
+  LANE_ORIGIN = SCREEN_HEIGHT - (GRID * 3)
   CAR_SPACING = 64
 
   def create(self, lane, delay, level, speed_multiplier, image_path, width):
