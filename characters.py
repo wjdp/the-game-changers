@@ -32,6 +32,7 @@ class Frog(Character, CollisionDetectionMixin):
     self.pos = (SCREEN_WIDTH / 2, SCREEN_HEIGHT - 64)
 
   def move(self, rel_pos):
+    """Move the frog the provided number of GRID squares, (x, y)"""
     self.pos = (self.pos[0] + rel_pos[0] * GRID, self.pos[1] + rel_pos[1] * GRID)
 
 class Car(Character):
@@ -44,21 +45,26 @@ class Car(Character):
   CAR_SPACING = 64
 
   def create(self, lane, delay, level, speed_multiplier, image_path, width):
+    # Store as instance variables
     self.lane = lane
     self.width = width
 
+    # Set the position based on provided params
     py = self.LANE_ORIGIN - (self.LANE_HEIGHT * lane)
     px = delay * self.CAR_SPACING
     self.pos = (px, py)
 
+    # Set the speed based on level and individual speed_multiplier
     self.set_speed((level + 1) * speed_multiplier)
 
+    # Set the image, and if in a right moving lane flip in the horizontal
     self.image = self.get_image(image_path)
     if self.lane % 2:
       # If move to right, flip image in x
       self.image = pygame.transform.flip(self.image, True, False)
 
   def set_speed(self, level):
+    """Set the velocity of the object"""
     speed = self.SPEED + (self.SPEED_INCREMENT * level)
 
     if self.lane % 2:

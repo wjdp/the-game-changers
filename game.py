@@ -131,18 +131,31 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
     pygame.event.post(ev)
 
   def get_screen_sized_surface(self):
-    return pygame.Surface((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.SRCALPHA).convert_alpha()
+    """Return a pygame screen sized surface with a transparent background"""
+    return pygame.Surface(
+      (self.SCREEN_WIDTH, self.SCREEN_HEIGHT),
+      pygame.SRCALPHA
+    ).convert_alpha()
 
   def clear_foreground(self):
+    """Clear the foreground surface"""
     self.foreground_surface.fill(pygame.SRCALPHA)
 
   def clear_background(self):
+    """Clear the background surface"""
     self.background_surface.fill(BLACK)
 
+  def set_background_image(self, image_path):
+    """Fill the background with an image given its path"""
+    bg_surf = pygame.image.load('images/{}'.format(image_path))
+    self.background_blit(bg_surf, ORIGIN)
+
   def foreground_blit(self, surface, coord):
+    """Draw a pygame surface to the foreground"""
     self.foreground_surface.blit(surface, coord)
 
   def background_blit(self, surface, coord):
+    """Draw a pygame surface to the background"""
     self.background_surface.blit(surface, coord)
 
   def tick(self):
