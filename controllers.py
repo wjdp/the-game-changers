@@ -42,11 +42,19 @@ class Controller(BaseController, ObjectManagerMixin):
 
 class MenuController(Controller):
   """Draws the main menu, changes the game state to start the game on user input"""
+  MENU_VOLUME = 0.3
   def create(self):
     bg = pygame.image.load('images/intro.png')
     self.engine.clear_background()
     self.engine.background_blit(bg, ORIGIN)
-
+	
+	#play menu music
+	
+    self.menu_music = pygame.mixer.Sound('sounds/GameMenu.wav')
+    self.menu_music.set_volume(self.MENU_VOLUME)
+    self.menu_music.play(-1)
+	
+	
     self.start_text = self.create_object(TextObject, self,
       font_size=64,
       pos=(0, SCREEN_HEIGHT - 80),
@@ -61,6 +69,10 @@ class MenuController(Controller):
       text="Press H to view highscores",
     )
 
+  #Stopmusic
+  def destroy(create):
+    pygame.mixer.stop()
+	
   def start_game(self):
     self.engine.setup_state('game')
 
@@ -355,14 +367,13 @@ class SoundController(Controller):
   ROAD_VOLUME = 0.1
   
   def create(self):
-    pygame.mixer.init()
     self.sound = pygame.mixer.Sound('sounds/GameSoundtrack.wav')
     self.sound.set_volume(self.BACKGROUND_VOLUME)
-    self.sound.play()
+    self.sound.play(-1)
     
     self.road = pygame.mixer.Sound('sounds/GameTraffic.wav')
     self.road.set_volume(self.ROAD_VOLUME)
-    self.road.play()
+    self.road.play(-1)
 	
     # Preload sounds
     self.win = pygame.mixer.Sound('sounds/GameWin.wav')
@@ -410,12 +421,19 @@ class PopupController(Controller):
 
 class GameOverController(Controller):
   """Draws the gameover screen along with the player score"""
-
+  GAMEOVER_VOLUME = 0.3
   def create(self):
     bg = pygame.image.load('images/end.png')
     self.engine.clear_background()
     self.engine.background_blit(bg, ORIGIN)
-
+	
+	#Gameover sound 
+	
+    self.gameOver = pygame.mixer.Sound('sounds/GameOver.wav')
+    self.gameOver.set_volume(self.GAMEOVER_VOLUME)
+    self.gameOver.play()
+	
+    
     self.score_text = self.create_object(TextObject, self,
       font_size=64,
       pos=(0, 32),
