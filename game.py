@@ -162,6 +162,9 @@ class GameEngine(BaseGameEngine, ObjectManagerMixin):
 
     # Draw active objects to the foreground
     for obj in self.objects:
+      # Cancel if object is set not to be drawn
+      if not obj.visible: continue
+
       obj_surface = obj.draw()
       if obj_surface:
         self.foreground_blit(obj_surface, obj.pos)
@@ -203,7 +206,7 @@ class FroggerGameEngine(GameEngine):
       controllers.ScoreTextController,
       controllers.FPSCounterController,
 	    controllers.SoundController,
-      controllers.DeathPopupController,
+      controllers.PopupController,
     ],
     'gameover': [
       controllers.GameController,

@@ -5,12 +5,14 @@ from pygame.locals import *
 from consts import *
 from object_manager import ObjectManagerMixin
 from characters import *
-from objects import Egg, DeadChicken
+from objects import *
 
 class BaseController(object):
   pass
 
 class Controller(BaseController, ObjectManagerMixin):
+  """Controllers manage various aspects of the game, they can manage objects,
+  interact via events and request changes to the state of the game"""
   EVENT_BINDINGS = [] # Empty bindings
 
   def __init__(self, engine, messages):
@@ -38,6 +40,7 @@ class Controller(BaseController, ObjectManagerMixin):
     self.purge_objects()
 
 class MenuController(Controller):
+  """Draws the main menu, changes the game state to start the game on user input"""
   def create(self):
     bg = pygame.image.load('images/intro.png')
     self.engine.clear_background()
@@ -59,36 +62,11 @@ class MenuController(Controller):
     K_RETURN: start_game
   }
 
-class SoundController(Controller):
-  BACKGROUND_VOLUME = 0.3
-
-  def create(self):
-    pygame.mixer.init()
-    self.sound = pygame.mixer.Sound('sounds/GameSoundtrack.wav')
-    self.sound.set_volume(self.BACKGROUND_VOLUME)
-    self.sound.play()
-
-    # Preload sounds
-    self.win = pygame.mixer.Sound('sounds/GameWin.wav')
-    self.die = pygame.mixer.Sound('sounds/GameDie.wav')
-
-  def destroy(self):
-	 pygame.mixer.stop()
-
-  def win(self, event):
-    self.win.play()
-
-  def die(self, event):
-    self.die.play()
-
-  EVENT_BINDINGS = {
-    E_WIN: win,
-    E_DIE: die,
-  }
-
-
 
 class GameController(Controller):
+  """Manages the state of the game, keeps track of lives and score, acts as a
+  broker for reset events"""
+
   level = 1
   score = 0
   lives = LIVES
@@ -142,34 +120,32 @@ class GameController(Controller):
 
 
 class PlayerController(Controller):
+  """Manages the player object, handles controls for movement and collision
+  events"""
+
   LEFT_BOUND = 0
-  RIGHT_BOUND = SCREEN_WIDTH - 32
-  TOP_BOUND = 32
-  BOTTOM_BOUND = SCREEN_HEIGHT - (32 * 2)
+  RIGHT_BOUND = SCREEN_WIDTH - GRID
+  TOP_BOUND = GRID
+  BOTTOM_BOUND = SCREEN_HEIGHT - (GRID * 2)
 
   def create(self):
     self.player_object = self.create_object(Frog, self)
     self.max_height = 0
     self.current_height = 0
-    self.active = True
-
-  def move(self, rel_pos):
-    cp = self.player_object.pos
-    self.player_object.pos = (cp[0] + rel_pos[0], cp[1] + rel_pos[1])
 
   def move_left(self):
-    if not self.player_object.pos[0] <= self.LEFT_BOUND and self.active:
-      self.move((-32, 0))
+    if not self.player_object.pos[0] <= self.LEFT_BOUND and self.player_object.visible:
+      self.player_object.move((-1, 0))
       self.engine.post_event(E_HOP, direction=LEFT, progress=False)
 
   def move_right(self):
-    if not self.player_object.pos[0] >= self.RIGHT_BOUND and self.active:
-      self.move((32, 0))
+    if not self.player_object.pos[0] >= self.RIGHT_BOUND and self.player_object.visible:
+      self.player_object.move((1, 0))
       self.engine.post_event(E_HOP, direction=RIGHT, progress=False)
 
   def move_up(self):
-    if not self.player_object.pos[1] <= self.TOP_BOUND and self.active:
-      self.move((0, -32))
+    if not self.player_object.pos[1] <= self.TOP_BOUND and self.player_object.visible:
+      self.player_object.move((0, -1))
 
       self.current_height += 1
       progressed = self.max_height < self.current_height
@@ -180,25 +156,25 @@ class PlayerController(Controller):
         self.max_height = self.current_height
 
   def move_down(self):
-    if not self.player_object.pos[1] >= self.BOTTOM_BOUND and self.active:
+    if not self.player_object.pos[1] >= self.BOTTOM_BOUND and self.player_object.visible:
       self.current_height -= 1
-      self.move((0, 32))
+      self.player_object.move((0, 1))
       self.engine.post_event(E_HOP, direction=DOWN, progress=False)
 
   def reset(self, event):
     self.player_object.move_to_start()
-    self.active = True
+    self.player_object.visible = True
 
   def tick(self):
     super(PlayerController, self).tick()
     collision_object = self.player_object.collision_check()
-    if collision_object and self.active:
+    if collision_object and self.player_object.visible:
       if isinstance(collision_object, Car):
         # Collided with Car, so die
-        self.active = False
+        self.player_object.visible = False
         self.engine.post_event(E_DIE)
       elif isinstance(collision_object, Hut):
-        self.active = False
+        self.player_object.visible = False
         self.engine.post_event(E_WIN)
 
   EVENT_BINDINGS = {
@@ -216,6 +192,8 @@ class PlayerController(Controller):
 
 
 class LevelController(Controller):
+  """Creates the level (cars and huts), rearranges the level on reset event"""
+
   # Define the car generator variables
   # List of lanes, each element:
   # (num_of_cars, (delay_low, delay_high), speed_multiplier, images, width)
@@ -252,7 +230,7 @@ class LevelController(Controller):
     LORRY_LANE_2,
   ]
 
-  HUT_POSITIONS = [ (x, 32) for x in range(32, SCREEN_WIDTH-32)[::32*6] ]
+  HUT_POSITIONS = [ (x, GRID) for x in range(GRID, SCREEN_WIDTH-GRID)[::GRID*6] ]
 
   def create(self):
     self.huts = []
@@ -287,6 +265,7 @@ class LevelController(Controller):
 
 
 class FPSCounterController(Controller):
+  """Optional controller to show the FPS at the top of the screen"""
 
   def create(self):
     self.font = pygame.font.Font(FONT_ACTION_MAN, 32)
@@ -307,10 +286,13 @@ class FPSCounterController(Controller):
 
 
 class ScoreTextController(Controller):
+  """Shows the score and lives at the top of the screen, is updated by events
+  sent by the GameController"""
+
   lives = None
   score = None
 
-  EGG_ORIGIN = (SCREEN_WIDTH - (32 * LIVES), 0)
+  EGG_ORIGIN = (SCREEN_WIDTH - (GRID * LIVES), 0)
 
   def create(self):
     self.font = pygame.font.Font(FONT_ACTION_MAN, 30, bold = True, italic = False)
@@ -327,7 +309,7 @@ class ScoreTextController(Controller):
     self.purge_objects()
     for i in range(self.lives):
       egg = self.create_object(Egg, self,
-        pos=(self.EGG_ORIGIN[0] + (32 * i), self.EGG_ORIGIN[1]))
+        pos=(self.EGG_ORIGIN[0] + (GRID * i), self.EGG_ORIGIN[1]))
       self.eggs.append(egg)
 
   def tick(self):
@@ -346,14 +328,46 @@ class ScoreTextController(Controller):
   }
 
 
-class DeathPopupController(Controller):
+class SoundController(Controller):
+  """Plays sounds for the game state, plays reactionary sounds on events"""
+
+  BACKGROUND_VOLUME = 0.3
+
+  def create(self):
+    pygame.mixer.init()
+    self.sound = pygame.mixer.Sound('sounds/GameSoundtrack.wav')
+    self.sound.set_volume(self.BACKGROUND_VOLUME)
+    self.sound.play()
+
+    # Preload sounds
+    self.win = pygame.mixer.Sound('sounds/GameWin.wav')
+    self.die = pygame.mixer.Sound('sounds/GameDie.wav')
+
+  def destroy(self):
+   pygame.mixer.stop()
+
+  def win(self, event):
+    self.win.play()
+
+  def die(self, event):
+    self.die.play()
+
+  EVENT_BINDINGS = {
+    E_WIN: win,
+    E_DIE: die,
+  }
+
+
+class PopupController(Controller):
+  """Shows a popup on events (win, die)"""
+
   popup = None
 
   def create(self):
     self.hide_popup = 0
 
   def show_popup(self, event):
-    self.popup = self.create_object(DeadChicken, self)
+    self.popup = self.create_object(DeadChickenPopup, self)
     self.popup.set_pos_centre()
     self.hide_popup = self.engine.get_ticks() + 1000
 
@@ -367,6 +381,8 @@ class DeathPopupController(Controller):
 
 
 class GameOverController(Controller):
+  """Draws the gameover screen along with the player score"""
+
   def create(self):
     bg = pygame.image.load('images/end.png')
     self.engine.clear_background()
