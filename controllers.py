@@ -530,7 +530,7 @@ class GameOverController(Controller):
 
   def go_high_score(self):
     """Go to score board"""
-    self.engine.setup_state('highscores')  
+    self.engine.setup_state('highscores')
 
   EVENT_BINDINGS = {
     K_RETURN: restart,
@@ -543,14 +543,14 @@ class ScoreBoardController(Controller):
   #High Score #
 
   def create(self):
-    self.engine.set_background_image(BG_SCORE_BOARD)    
-    name_score = [] 
+    self.engine.set_background_image(BG_SCORE_BOARD)
+    name_score = []
 
     with open("high_score.csv", 'rb') as f:
       high_score_reader = csv.reader(f)
       for line in high_score_reader:
         name_score.append(line)
-            
+
     name_score.sort(key = lambda i: -int(i[1]))
 
     for j, x in enumerate(name_score[:8]):
@@ -612,9 +612,12 @@ class HighScoreController(Controller):
 
   def user_input(self, event):
     """Handle user input"""
-    if re.match('^[\w-]+$', event.unicode):
+    if re.match('^[\w-]+$', event.unicode) and len(self.name) < 16:
       # Input is letters, add to self.name
       self.name += event.unicode
+      self.update_name_text()
+    elif event.key == K_BACKSPACE:
+      self.name = self.name[:-1]
       self.update_name_text()
     elif event.key == K_RETURN:
       # Input is enter, save and return to gameover state
