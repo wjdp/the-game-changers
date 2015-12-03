@@ -1,0 +1,27 @@
+# DESCRIPTION
+
+The game is a Frogger clone with a chicken!
+
+## How to play
+
+Press enter to start the game, use the arrow keys or WASD to move. Avoid the cars and get to one of the hen houses to complete the level.
+
+The game is infinite, however each level gets slightly harder! You get 5 lives.
+
+## Overview of game engine
+
+The game engine implemented is a generic 2D engine - GameEngine - which is subclassed as FroggerGameEngine. The engine handles setting up the display, the foreground and background surfaces, enforcing a framerate cap, the event queue, application keyboard events, drawing objects to the screen and manages the state of the game through controllers.
+
+Controllers implement various aspects of each state of the game. The game has three states 'menu', 'game' and 'gameover'. Each one of these states has a set of controllers that handle the background, player objects, level objects, score display, sound playback and so on.
+
+When a state is switched controllers common to the old and new states are left alone while others are created and destroyed.
+
+Controllers can create objects, a reference is kept by the controller and the engine. The engine's reference is used to loop over all objects and draw them during the main game loop.
+
+User input and cross controller communication is handled by the event queue. Each tick the event queue is parsed. Controllers have a dictionary - EVENT_BINDINGS - which lists a event and member function of that controller which is called when that event is fired. This allows multiple controllers to react to an event and decouples parts of the game. For example the SoundController plays sounds on win and death, this controller can be removed to disable this behaviour without any adverse affect on the rest of the game.
+
+On each win state an event E_SOFT_RESET is fired. The LevelController resets the level, randomising the position of the vehicles on the road.
+
+Collision detection is only run on the chicken (Frog) character.
+
+On game-over all objects are removed when the game switches state to the 'gameover' state. A message with the final score is passed to controllers of the 'gameover' state to allow its display on-screen. Pressing enter on the game-over screen will put the game back into 'game' state to allow another level to play.

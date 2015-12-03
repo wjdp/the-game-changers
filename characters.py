@@ -20,6 +20,7 @@ class Character(MovableObject):
 class Frog(Character, CollisionDetectionObject):
   IMAGE = "chicken.png"
   PLACEHOLDER_COLOUR = RED
+  Z_INDEX = 5
 
   def create(self):
     self.move_to_start()
@@ -63,6 +64,10 @@ class Car(Character):
     else:
       # Move to the left
       self.velocity = (-speed, 0)
+
+  def get_width(self):
+    # Override object get_width function
+    return self.width
 
   def tick_move(self):
     """Move the object based on velocity with wrapping"""

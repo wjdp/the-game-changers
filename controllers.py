@@ -5,8 +5,7 @@ from pygame.locals import *
 from consts import *
 from object_manager import ObjectManagerMixin
 from characters import *
-
-
+from objects import Egg, DeadChicken
 
 class BaseController(object):
   pass
@@ -72,10 +71,10 @@ class SoundController(Controller):
     # Preload sounds
     self.win = pygame.mixer.Sound('sounds/GameWin.wav')
     self.die = pygame.mixer.Sound('sounds/GameDie.wav')
-	
+
   def destroy(self):
 	 pygame.mixer.stop()
-     
+
   def win(self, event):
     self.win.play()
 
@@ -221,14 +220,14 @@ class LevelController(Controller):
   # List of lanes, each element:
   # (num_of_cars, (delay_low, delay_high), speed_multiplier, images, width)
   LORRY_LANE_1 = (6, (3,5), .5, LORRIES, LORRY_WIDTH)
-  LORRY_LANE_2 = (6, (3,5), .6, LORRIES, LORRY_WIDTH)
+  LORRY_LANE_2 = (5, (3,5), .6, LORRIES, LORRY_WIDTH) #max 6 distance on the road
 
-  TRUCK_LANE_1 = (7, (2,4), 0.2, TRUCKS, TRUCK_WIDTH)
+  TRUCK_LANE_1 = (5, (2,6), 0.2, TRUCKS, TRUCK_WIDTH)
   TRUCK_LANE_2 = (6, (3,5), 0.7, TRUCKS, TRUCK_WIDTH)
-  TRUCK_LANE_3 = (5, (4,6), 1, TRUCKS, TRUCK_WIDTH)
+  TRUCK_LANE_3 = (5, (4,6), 2, TRUCKS, TRUCK_WIDTH)
 
-  CAR_LANE_1 = (4, (4,6), 5, CARS, CAR_WIDTH)
-  CAR_LANE_2 = (2, (6,15), 6, CARS, CAR_WIDTH)
+  CAR_LANE_1 = (4, (4,6), 5, CARS, CAR_WIDTH) #max 7 distance on the road
+  CAR_LANE_2 = (2, (6,10), 6, CARS, CAR_WIDTH)
 
   PAVEMENT = (0, None, None)
 
@@ -297,7 +296,7 @@ class FPSCounterController(Controller):
     # If fps active, blit to top left
     if self.show_fps:
       text = self.font.render(str(self.engine.get_fps()), True, RED)
-      self.engine.foreground_blit(text, (0, 0))
+      self.engine.foreground_blit(text, (300, 0))
 
   def toggle_fps(self):
     self.show_fps = not self.show_fps
@@ -311,8 +310,11 @@ class ScoreTextController(Controller):
   lives = None
   score = None
 
+  EGG_ORIGIN = (SCREEN_WIDTH - (32 * LIVES), 0)
+
   def create(self):
-    self.font = pygame.font.Font(FONT_ACTION_MAN, 20, bold = True, italic = False)
+    self.font = pygame.font.Font(FONT_ACTION_MAN, 30, bold = True, italic = False)
+    self.eggs = []
 
   def update(self, event):
     self.lives = event.lives
@@ -321,14 +323,46 @@ class ScoreTextController(Controller):
   def update_score(self, event):
     self.score = event.score
 
+  def update_eggs(self):
+    self.purge_objects()
+    for i in range(self.lives):
+      egg = self.create_object(Egg, self,
+        pos=(self.EGG_ORIGIN[0] + (32 * i), self.EGG_ORIGIN[1]))
+      self.eggs.append(egg)
+
   def tick(self):
     if self.lives is not None:
-      text = self.font.render("Score: {} Lives: {}".format(self.score, self.lives), 1 , BLUE)
-      self.engine.foreground_blit(text, (600,0))
+      if len(self.eggs) != self.lives:
+        self.update_eggs()
+
+      text1 = self.font.render("Score: {}".format(self.score), 1 , YELLOW)
+      text2 = self.font.render("Lives", 1 , YELLOW)
+      self.engine.foreground_blit(text1, (2,4))
+      self.engine.foreground_blit(text2, (self.EGG_ORIGIN[0] - text2.get_width() - 12 ,4))
 
   EVENT_BINDINGS = {
     E_SOFT_RESET: update,
     E_SCORE_CHANGED: update_score,
+  }
+
+
+class DeathPopupController(Controller):
+  popup = None
+
+  def create(self):
+    self.hide_popup = 0
+
+  def show_popup(self, event):
+    self.popup = self.create_object(DeadChicken, self)
+    self.popup.set_pos_centre()
+    self.hide_popup = self.engine.get_ticks() + 1000
+
+  def tick(self):
+    if self.popup is not None and self.engine.get_ticks() > self.hide_popup:
+      self.purge_objects()
+
+  EVENT_BINDINGS = {
+    E_DIE: show_popup,
   }
 
 
@@ -350,7 +384,8 @@ class GameOverController(Controller):
     x2 = (SCREEN_WIDTH - text2.get_width()) / 2
 
     self.engine.foreground_blit(text1, (x1, 32))
-    self.engine.foreground_blit(text2, (x2, 96))
+    if self.engine.get_ticks() % 1000 > 500:
+      self.engine.foreground_blit(text2, (x2, 96))
 
   def restart(self):
     self.engine.setup_state('game', purge=True)

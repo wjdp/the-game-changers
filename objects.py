@@ -1,11 +1,11 @@
 import pygame
 from pygame.locals import *
 
-
 from consts import *
 
 class Object(object):
   PLACEHOLDER_COLOUR = YELLOW
+  Z_INDEX = 0
 
   def __init__(self, controller, pos=(0,0)):
     self.controller = controller
@@ -40,8 +40,20 @@ class Object(object):
     else:
       return self.get_placeholder()
 
+  def get_width(self):
+    return self.get_image().get_width()
+
+  def get_height(self):
+    return self.get_image().get_height()
+
+  def set_pos_centre(self):
+    self.pos = (
+      (SCREEN_WIDTH / 2) - (self.get_width() / 2),
+      (SCREEN_HEIGHT / 2) - (self.get_height() / 2),
+    )
+
   def tick(self):
-    self.rect = pygame.Rect(self.pos, (32, 32))
+    self.rect = pygame.Rect(self.pos, (self.get_width(), self.get_height()))
 
   def destroy(self):
     pass
@@ -69,5 +81,12 @@ class CollisionDetectionObject(Object):
       if not obj is self:
         if not self.rect.colliderect(obj.rect) == 0:
           return obj
-
     return False
+
+class Egg(Object):
+  Z_INDEX = 10
+  IMAGE = EGG
+
+class DeadChicken(Object):
+  Z_INDEX = 100
+  IMAGE = DEAD_CHICKEN
