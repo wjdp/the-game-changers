@@ -344,6 +344,7 @@ class ScoreTextController(Controller):
 
   lives = None
   score = None
+  level = None 
 
   EGG_ORIGIN = (SCREEN_WIDTH - (GRID * LIVES), 0)
 
@@ -360,15 +361,23 @@ class ScoreTextController(Controller):
       pos=(self.EGG_ORIGIN[0] - 76, 6),
       text="Lives",
     )
+    self.level_text = self.create_object(TextObject, self, 
+      font_size=self.SCORE_FONT_SIZE,                       
+      pos=(SCREEN_WIDTH/2-6 , 6),
+    )
 
     self.eggs = []
 
   def update(self, event):
     self.lives = event.lives
     self.update_score(event)
+    self.update_level(event)
 
   def update_score(self, event):
     self.score_text.set_text("Score: {}".format(event.score))
+
+  def update_level(self, event):      
+    self.level_text.set_text("Level: {}".format(event.level)) 
 
   def update_eggs(self):
     # Remove all objects
@@ -389,6 +398,7 @@ class ScoreTextController(Controller):
   EVENT_BINDINGS = {
     E_SOFT_RESET: update,
     E_SCORE_CHANGED: update_score,
+    E_LEVEL_CHANGED: update_level,
   }
 
 
